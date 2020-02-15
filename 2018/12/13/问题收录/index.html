@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="keep moving">
 <meta property="og:description" content="序 此文章记录工作中及学习中遇到的问题。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-02-14T14:52:46.632Z">
+<meta property="og:updated_time" content="2020-02-15T14:58:20.026Z">
 <meta name="twitter:card" content="summary">
 
 
@@ -366,16 +366,47 @@
 </blockquote>
 <a id="more"></a>
 
-<h2 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h2><blockquote>
-<ul>
-<li>问题：如何在本地初始化项目并推送至远程仓库？  <a href="https://segmentfault.com/a/1190000009491296" target="_blank" rel="noopener">将本地项目推送到远程git新仓库</a></li>
+<h2 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h2><ul>
+<li>问题：如何在本地初始化项目并推送至远程仓库？ </li>
 </ul>
+<blockquote>
+<p><a href="https://segmentfault.com/a/1190000009491296" target="_blank" rel="noopener">将本地项目推送到远程git新仓库</a></p>
 </blockquote>
-<hr>
-<h2 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a>RabbitMQ</h2><blockquote>
-<ul>
-<li>问题：springboot如何集成多套MQ？ <a href="https://blog.csdn.net/qq_37608766/article/details/80912370" target="_blank" rel="noopener">Spring Boot配置多个RabbitMQ</a></li>
+<h2 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h2><ul>
+<li>问题：文件流 file.mkdir 和 mkdirs的区别？</li>
 </ul>
+<blockquote>
+<p>java.io.File.mkdir()：只能创建一级目录，且父目录必须存在，否则无法成功创建一个目录</p>
+<p>java.io.File.mkdirs()：可以创建多级目录，父目录不一定存在。</p>
+</blockquote>
+<h2 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a>RabbitMQ</h2><ul>
+<li>问题：springboot如何集成多套MQ？</li>
+</ul>
+<blockquote>
+<p> <a href="https://blog.csdn.net/qq_37608766/article/details/80912370" target="_blank" rel="noopener">Spring Boot配置多个RabbitMQ</a></p>
+</blockquote>
+<h2 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h2><ul>
+<li>问题：@Transactional注解失效的情况及原因</li>
+</ul>
+<blockquote>
+<ol>
+<li>在代理模式（默认设置）下，只拦截通过代理进入的外部方法调用。这意味着自调用（实际上，目标对象中的方法调用目标对象的另一个方法）在运行时不会导致实际的事务，即使调用的方法被标记<code>@Transactional</code>。</li>
+<li>使用代理时，应仅将<code>@Transactional</code>注释应用于具有公共可见性的方法。如果使用注释 注释protected，private或package-visible方法，则<code>@Transactional</code>不会引发错误，但带注释的方法不会显示已配置的事务设置。</li>
+</ol>
+<p><a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/data-access.html#transaction-declarative-annotations" target="_blank" rel="noopener">spring官方文档</a></p>
+<p>原因：<a href="https://www.jb51.net/article/137255.htm" target="_blank" rel="noopener">SPRING AOP 原理</a></p>
+</blockquote>
+<h2 id="SpringBoot"><a href="#SpringBoot" class="headerlink" title="SpringBoot"></a>SpringBoot</h2><ul>
+<li>问题：CommandLineRunner和ApplicationRunner接口的区别</li>
+</ul>
+<blockquote>
+<ol>
+<li>ApplicationRunner 默认优先于 CommandLineRunner执行</li>
+<li>可以使用@Order指定执行顺序 1&gt;2&gt;3</li>
+<li>CommandLineRunner的参数是最原始的参数，没有做任何处理；ApplicationRunner的参数是ApplicationArguments，是对原始参数做了进一步的封装</li>
+<li>CommandLineRunner、ApplicationRunner 接口是在容器启动成功后的最后一步回调（类似开机自启动）。</li>
+</ol>
+<p><a href="https://www.jianshu.com/p/5d4ffe267596" target="_blank" rel="noopener">CommandLineRunner或者ApplicationRunner接口</a></p>
 </blockquote>
 
       
@@ -545,7 +576,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#序"><span class="nav-number">1.</span> <span class="nav-text">序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Git"><span class="nav-number">2.</span> <span class="nav-text">Git</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RabbitMQ"><span class="nav-number">3.</span> <span class="nav-text">RabbitMQ</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#序"><span class="nav-number">1.</span> <span class="nav-text">序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Git"><span class="nav-number">2.</span> <span class="nav-text">Git</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java"><span class="nav-number">3.</span> <span class="nav-text">Java</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RabbitMQ"><span class="nav-number">4.</span> <span class="nav-text">RabbitMQ</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring"><span class="nav-number">5.</span> <span class="nav-text">Spring</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot"><span class="nav-number">6.</span> <span class="nav-text">SpringBoot</span></a></li></ol></div>
             
 
           </div>
