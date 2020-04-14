@@ -79,16 +79,16 @@
 
 
 
-<meta name="description" content="序 重回基础系列之MySQL系列主要是基于对 极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。  MySQL的架构  MySQL的安装 下载源代码自行编译安装 直接使用官方提供的安装包   windows或linux的安装请自行google  MySQL的安装目录b">
+<meta name="description" content="序 重回基础系列之MySQL系列主要是基于对 极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。">
 <meta name="keywords" content="back to basics">
 <meta property="og:type" content="article">
 <meta property="og:title" content="重回基础之MySQL系列（一）：MySQL的运行方式">
 <meta property="og:url" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;14&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F&#x2F;index.html">
 <meta property="og:site_name" content="keep moving">
-<meta property="og:description" content="序 重回基础系列之MySQL系列主要是基于对 极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。  MySQL的架构  MySQL的安装 下载源代码自行编译安装 直接使用官方提供的安装包   windows或linux的安装请自行google  MySQL的安装目录b">
+<meta property="og:description" content="序 重回基础系列之MySQL系列主要是基于对 极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;14&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F&#x2F;1586876357383.jpg">
-<meta property="og:updated_time" content="2020-04-14T15:51:45.957Z">
+<meta property="og:updated_time" content="2020-04-14T15:55:02.126Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;14&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F&#x2F;1586876357383.jpg">
 
@@ -388,6 +388,7 @@
       
         <h2 id="序"><a href="#序" class="headerlink" title="序"></a>序</h2><blockquote>
 <p>重回基础系列之MySQL系列主要是基于对 <strong>极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子</strong>的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。</p>
+<a id="more"></a>
 </blockquote>
 <h2 id="MySQL的架构"><a href="#MySQL的架构" class="headerlink" title="MySQL的架构"></a>MySQL的架构</h2><img src="/keepmoving/2020/04/14/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F/1586876357383.jpg" class="" title="mysql客户端与服务端的连接方式">
 
