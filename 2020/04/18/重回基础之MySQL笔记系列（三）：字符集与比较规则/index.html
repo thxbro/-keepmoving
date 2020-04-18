@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="back to basics," />
 
 
 
@@ -79,14 +79,15 @@
 
 
 
-<meta name="description" content="序 此文章记录工作中及学习中遇到的问题。">
+<meta name="description" content="序 重回基础系列之MySQL系列主要是基于对 极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。">
+<meta name="keywords" content="back to basics">
 <meta property="og:type" content="article">
-<meta property="og:title" content="问题收录">
-<meta property="og:url" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2018&#x2F;12&#x2F;13&#x2F;%E9%97%AE%E9%A2%98%E6%94%B6%E5%BD%95&#x2F;index.html">
+<meta property="og:title" content="重回基础之MySQL笔记系列（三）：字符集与比较规则">
+<meta property="og:url" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;18&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E6%AF%94%E8%BE%83%E8%A7%84%E5%88%99&#x2F;index.html">
 <meta property="og:site_name" content="keep moving">
-<meta property="og:description" content="序 此文章记录工作中及学习中遇到的问题。">
+<meta property="og:description" content="序 重回基础系列之MySQL系列主要是基于对 极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-02-15T14:58:20.026Z">
+<meta property="og:updated_time" content="2020-04-18T17:00:07.606Z">
 <meta name="twitter:card" content="summary">
 
 
@@ -117,13 +118,13 @@
 
 
 
-  <link rel="canonical" href="https://thxbro.github.io/keepmoving/2018/12/13/问题收录/"/>
+  <link rel="canonical" href="https://thxbro.github.io/keepmoving/2020/04/18/重回基础之MySQL笔记系列（三）：字符集与比较规则/"/>
 
 
 
 
 
-  <title>问题收录 | keep moving</title>
+  <title>重回基础之MySQL笔记系列（三）：字符集与比较规则 | keep moving</title>
   
 
 
@@ -294,7 +295,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://thxbro.github.io/keepmoving/keepmoving/2018/12/13/%E9%97%AE%E9%A2%98%E6%94%B6%E5%BD%95/">
+    <link itemprop="mainEntityOfPage" href="https://thxbro.github.io/keepmoving/keepmoving/2020/04/18/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E6%AF%94%E8%BE%83%E8%A7%84%E5%88%99/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Chris">
@@ -311,7 +312,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">问题收录</h1>
+          <h1 class="post-title" itemprop="name headline">重回基础之MySQL笔记系列（三）：字符集与比较规则</h1>
         
 
         <div class="post-meta">
@@ -323,8 +324,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-13T23:46:34+08:00">
-                2018-12-13
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-18T22:58:51+08:00">
+                2020-04-18
               </time>
             
 
@@ -333,6 +334,28 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/keepmoving/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -362,53 +385,93 @@
 
       
         <h2 id="序"><a href="#序" class="headerlink" title="序"></a>序</h2><blockquote>
-<p>此文章记录工作中及学习中遇到的问题。</p>
+<p>重回基础系列之MySQL系列主要是基于对 <strong>极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子</strong>的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。</p>
 </blockquote>
 <a id="more"></a>
 
-<h2 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h2><ul>
-<li>问题：如何在本地初始化项目并推送至远程仓库？ </li>
-</ul>
-<blockquote>
-<p><a href="https://segmentfault.com/a/1190000009491296" target="_blank" rel="noopener">将本地项目推送到远程git新仓库</a></p>
-</blockquote>
-<h2 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h2><ul>
-<li>问题：文件流 file.mkdir 和 mkdirs的区别？</li>
-</ul>
-<blockquote>
-<p>java.io.File.mkdir()：只能创建一级目录，且父目录必须存在，否则无法成功创建一个目录</p>
-<p>java.io.File.mkdirs()：可以创建多级目录，父目录不一定存在。</p>
-</blockquote>
-<h2 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a>RabbitMQ</h2><ul>
-<li>问题：springboot如何集成多套MQ？</li>
-</ul>
-<blockquote>
-<p> <a href="https://blog.csdn.net/qq_37608766/article/details/80912370" target="_blank" rel="noopener">Spring Boot配置多个RabbitMQ</a></p>
-</blockquote>
-<h2 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h2><ul>
-<li>问题：@Transactional注解失效的情况及原因</li>
-</ul>
-<blockquote>
-<ol>
-<li>在代理模式（默认设置）下，只拦截通过代理进入的外部方法调用。这意味着自调用（实际上，目标对象中的方法调用目标对象的另一个方法）在运行时不会导致实际的事务，即使调用的方法被标记<code>@Transactional</code>。</li>
-<li>使用代理时，应仅将<code>@Transactional</code>注释应用于具有公共可见性的方法。如果使用注释 注释protected，private或package-visible方法，则<code>@Transactional</code>不会引发错误，但带注释的方法不会显示已配置的事务设置。</li>
-</ol>
-<p><a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/data-access.html#transaction-declarative-annotations" target="_blank" rel="noopener">spring官方文档</a></p>
-<p>原因：<a href="https://www.jb51.net/article/137255.htm" target="_blank" rel="noopener">SPRING AOP 原理</a></p>
-</blockquote>
-<h2 id="SpringBoot"><a href="#SpringBoot" class="headerlink" title="SpringBoot"></a>SpringBoot</h2><ul>
-<li>问题：CommandLineRunner和ApplicationRunner接口的区别</li>
-</ul>
-<blockquote>
-<ol>
-<li>ApplicationRunner 默认优先于 CommandLineRunner执行</li>
-<li>可以使用@Order指定执行顺序 1&gt;2&gt;3</li>
-<li>CommandLineRunner的参数是最原始的参数，没有做任何处理；ApplicationRunner的参数是ApplicationArguments，是对原始参数做了进一步的封装</li>
-<li>CommandLineRunner、ApplicationRunner 接口是在容器启动成功后的最后一步回调（类似开机自启动）。</li>
-</ol>
-<p><a href="https://www.jianshu.com/p/5d4ffe267596" target="_blank" rel="noopener">CommandLineRunner或者ApplicationRunner接口</a></p>
-</blockquote>
+<h2 id="字符集与比较规则"><a href="#字符集与比较规则" class="headerlink" title="字符集与比较规则"></a>字符集与比较规则</h2><h3 id="字符集"><a href="#字符集" class="headerlink" title="字符集"></a>字符集</h3><p>计算机通过建立字符与二进制的映射关系来存储字符串，而字符集就是描述<strong>某个字符范围内的编码规则</strong>。（定义了字符的范围与映射规则）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">graph LR</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">A[字符] --&gt;|编码|B(二进制数据)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">B--&gt;|解码|A</span></pre></td></tr></table></figure>
 
+<h4 id="常用的字符集"><a href="#常用的字符集" class="headerlink" title="常用的字符集"></a>常用的字符集</h4><ul>
+<li><code>ASCII</code>字符集</li>
+</ul>
+<p>共收录128个字符，包括空格、标点符号、数字、大小写字母和一些不可见字符。由于总共才128个字符，所以可以使用1个字节来进行编码，我们看一些字符的编码方式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">&#39;L&#39; -&gt;  01001100（十六进制：0x4C，十进制：76）</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">&#39;M&#39; -&gt;  01001101（十六进制：0x4D，十进制：77）</span></pre></td></tr></table></figure>
+
+<ul>
+<li><code>ISO 8859-1</code>字符集</li>
+</ul>
+<p>共收录256个字符，是在<code>ASCII</code>字符集的基础上又扩充了128个西欧常用字符(包括德法两国的字母)，也可以使用1个字节来进行编码。这个字符集也有一个别名<code>latin1</code>。</p>
+<ul>
+<li><code>GB2312</code>字符集</li>
+</ul>
+<p>收录了汉字以及拉丁字母、希腊字母、日文平假名及片假名字母、俄语西里尔字母。其中收录汉字6763个，其他文字符号682个。同时这种字符集又兼容<code>ASCII</code>字符集，所以在编码方式上显得有些奇怪：</p>
+<ul>
+<li>如果该字符在<code>ASCII</code>字符集中，则采用1字节编码。</li>
+<li>否则采用2字节编码。</li>
+</ul>
+<p>这种表示一个字符需要的字节数可能不同的编码方式称为<code>变长编码方式</code>。比方说字符串<code>&#39;爱u&#39;</code>，其中<code>&#39;爱&#39;</code>需要用2个字节进行编码，编码后的十六进制表示为<code>0xB0AE</code>，<code>&#39;u&#39;</code>需要用1个字节进行编码，编码后的十六进制表示为<code>0x75</code>，所以拼合起来就是<code>0xB0AE75</code>。</p>
+<ul>
+<li><code>GBK</code>字符集</li>
+</ul>
+<p><code>GBK</code>字符集只是在收录字符范围上对<code>GB2312</code>字符集作了扩充，编码方式上兼容<code>GB2312</code>。</p>
+<ul>
+<li><code>utf8</code>字符集</li>
+</ul>
+<p>收录地球上能想到的所有字符，而且还在不断扩充。这种字符集兼容<code>ASCII</code>字符集，采用变长编码方式，编码一个字符需要使用1～4个字节，比方说这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">&#39;L&#39; -&gt;  01001100（十六进制：0x4C）</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">&#39;啊&#39; -&gt;  111001011001010110001010（十六进制：0xE5958A）</span></pre></td></tr></table></figure>
+
+<p>注意：</p>
+<blockquote>
+<p>utf8只是Unicode字符集的一种编码方案，Unicode字符集可以采用utf8、utf16、utf32这几种编码方案，utf8使用1～4个字节编码一个字符，utf16使用2个或4个字节编码一个字符，utf32使用4个字节编码一个字符。</p>
+</blockquote>
+<h3 id="比较规则"><a href="#比较规则" class="headerlink" title="比较规则"></a>比较规则</h3><p>如何比较两个字符的大小？最简单的方式是通过二进制大小来比较，但英文字母大小写本质上是相同的若通过二进制大小比较则不合适，故可先同转大写或小写再比较。<strong>同一种字符集可以有多种比较规则。</strong></p>
+<h2 id="MySQL中支持的字符集和排序规则"><a href="#MySQL中支持的字符集和排序规则" class="headerlink" title="MySQL中支持的字符集和排序规则"></a>MySQL中支持的字符集和排序规则</h2><h3 id="MySQL中的utf8和utf8mb4"><a href="#MySQL中的utf8和utf8mb4" class="headerlink" title="MySQL中的utf8和utf8mb4"></a>MySQL中的utf8和utf8mb4</h3><p><code>MySQL</code>中字符集表示一个字符所用最大字节长度在某些方面会影响系统的存储和性能，故mysql的设计者在utf8上又划分了2个概念：</p>
+<ul>
+<li><code>utf8mb3（utf8）</code>：阉割过的<code>utf8</code>字符集，只使用1～3个字节表示字符。</li>
+<li><code>utf8mb4</code>：正宗的<code>utf8</code>字符集，使用1～4个字节表示字符。</li>
+</ul>
+<blockquote>
+<p>常用的字符使用1～3个字节就可以表示使用utf8，但比如存储一些emoji的表情，就要使用utf8mb4。</p>
+</blockquote>
+<p>字符集的查看：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">SHOW (CHARACTER SET|CHARSET) [LIKE 匹配的模式];</span></pre></td></tr></table></figure>
+
+<p>比较规则的查看：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">SHOW COLLATION [LIKE 匹配的模式];</span></pre></td></tr></table></figure>
+
+<h3 id="字符集和比较规则的应用"><a href="#字符集和比较规则的应用" class="headerlink" title="字符集和比较规则的应用"></a>字符集和比较规则的应用</h3><h4 id="各级别的字符集和比较规则"><a href="#各级别的字符集和比较规则" class="headerlink" title="各级别的字符集和比较规则"></a>各级别的字符集和比较规则</h4><p><code>MySQL</code>有4个级别的字符集和比较规则（若未指定，则跟随上一级），分别是：</p>
+<ul>
+<li>服务器级别(启动或运行)</li>
+</ul>
+<p><code>MySQL</code>提供了两个系统变量来表示服务器级别的字符集和比较规则：<code>character_set_server</code></p>
+<p>和 <code>collation_server</code></p>
+<ul>
+<li>数据库级别(建数据库或修改时)</li>
+</ul>
+<p>系统变量为：<code>character_set_database</code> 和 <code>collation_database</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">CREATE DATABASE 数据库名</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    [[DEFAULT] CHARACTER SET 字符集名称]</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    [[DEFAULT] COLLATE 比较规则名称];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">ALTER DATABASE 数据库名</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">    [[DEFAULT] CHARACTER SET 字符集名称]</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    [[DEFAULT] COLLATE 比较规则名称];</span></pre></td></tr></table></figure>
+
+<p>注意：<strong><em>character_set_database</em></strong> 和 <strong><em>collation_database</em></strong> 这两个系统变量是只读的，我们不能通过修改这两个变量的值而改变当前数据库的字符集和比较规则。</p>
+<ul>
+<li>表级别(建表或修改时)</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">CREATE TABLE 表名 (列的信息)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    [[DEFAULT] CHARACTER SET 字符集名称]</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    [COLLATE 比较规则名称]]</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">ALTER TABLE 表名</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">    [[DEFAULT] CHARACTER SET 字符集名称]</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    [COLLATE 比较规则名称]</span></pre></td></tr></table></figure>
+
+<ul>
+<li>列级别（建列或修改时）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">CREATE TABLE 表名(</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    列名 字符串类型 [CHARACTER SET 字符集名称] [COLLATE 比较规则名称],</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    其他列...</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">ALTER TABLE 表名 MODIFY 列名 字符串类型 [CHARACTER SET 字符集名称] [COLLATE 比较规则名称];</span></pre></td></tr></table></figure>
+
+<p><strong>注意：</strong></p>
+<blockquote>
+<p>字符集和比较规则是互相有联系的，故：</p>
+<ul>
+<li>只修改字符集，则比较规则将变为修改后的字符集默认的比较规则。</li>
+<li>只修改比较规则，则字符集将变为修改后的比较规则对应的字符集。</li>
+</ul>
+</blockquote>
+<h2 id="客户端和服务器通信中的字符集"><a href="#客户端和服务器通信中的字符集" class="headerlink" title="客户端和服务器通信中的字符集"></a>客户端和服务器通信中的字符集</h2>
       
     </div>
     
@@ -423,6 +486,12 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/keepmoving/tags/back-to-basics/" rel="tag"># back to basics</a>
+          
+        </div>
+      
 
       
       
@@ -432,8 +501,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/keepmoving/2018/12/03/Nexus/" rel="next" title="Nexus">
-                <i class="fa fa-chevron-left"></i> Nexus
+              <a href="/keepmoving/2020/04/14/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E5%90%AF%E5%8A%A8%E9%80%89%E9%A1%B9%E5%92%8C%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F/" rel="next" title="重回基础之MySQL系列（二）：MySQL的启动选项和系统变量">
+                <i class="fa fa-chevron-left"></i> 重回基础之MySQL系列（二）：MySQL的启动选项和系统变量
               </a>
             
           </div>
@@ -441,10 +510,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/keepmoving/2018/12/17/%E5%AE%89%E5%85%A8%E6%B5%8B%E8%AF%95-API%E8%AE%BE%E8%AE%A1/" rel="prev" title="安全测试-API设计">
-                安全测试-API设计 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -576,7 +641,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#序"><span class="nav-number">1.</span> <span class="nav-text">序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Git"><span class="nav-number">2.</span> <span class="nav-text">Git</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java"><span class="nav-number">3.</span> <span class="nav-text">Java</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RabbitMQ"><span class="nav-number">4.</span> <span class="nav-text">RabbitMQ</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring"><span class="nav-number">5.</span> <span class="nav-text">Spring</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot"><span class="nav-number">6.</span> <span class="nav-text">SpringBoot</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#序"><span class="nav-number">1.</span> <span class="nav-text">序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#字符集与比较规则"><span class="nav-number">2.</span> <span class="nav-text">字符集与比较规则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#字符集"><span class="nav-number">2.1.</span> <span class="nav-text">字符集</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#常用的字符集"><span class="nav-number">2.1.1.</span> <span class="nav-text">常用的字符集</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#比较规则"><span class="nav-number">2.2.</span> <span class="nav-text">比较规则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL中支持的字符集和排序规则"><span class="nav-number">3.</span> <span class="nav-text">MySQL中支持的字符集和排序规则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL中的utf8和utf8mb4"><span class="nav-number">3.1.</span> <span class="nav-text">MySQL中的utf8和utf8mb4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字符集和比较规则的应用"><span class="nav-number">3.2.</span> <span class="nav-text">字符集和比较规则的应用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#各级别的字符集和比较规则"><span class="nav-number">3.2.1.</span> <span class="nav-text">各级别的字符集和比较规则</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端和服务器通信中的字符集"><span class="nav-number">4.</span> <span class="nav-text">客户端和服务器通信中的字符集</span></a></li></ol></div>
             
 
           </div>

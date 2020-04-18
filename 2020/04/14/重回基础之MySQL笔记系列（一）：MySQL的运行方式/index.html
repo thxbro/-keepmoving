@@ -82,13 +82,15 @@
 <meta name="description" content="序 重回基础系列之MySQL系列主要是基于对 极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。">
 <meta name="keywords" content="back to basics">
 <meta property="og:type" content="article">
-<meta property="og:title" content="重回基础之MySQL系列（二）：MySQL的启动选项和系统变量">
-<meta property="og:url" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;14&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E5%90%AF%E5%8A%A8%E9%80%89%E9%A1%B9%E5%92%8C%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F&#x2F;index.html">
+<meta property="og:title" content="重回基础之MySQL系列（一）：MySQL的运行方式">
+<meta property="og:url" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;14&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F&#x2F;index.html">
 <meta property="og:site_name" content="keep moving">
 <meta property="og:description" content="序 重回基础系列之MySQL系列主要是基于对 极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-04-16T16:22:18.053Z">
+<meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;14&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F&#x2F;1586876357383.jpg">
+<meta property="og:updated_time" content="2020-04-14T16:00:01.218Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;14&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F&#x2F;1586876357383.jpg">
 
 
 
@@ -118,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://thxbro.github.io/keepmoving/2020/04/14/重回基础之MySQL系列（二）：MySQL的启动选项和系统变量/"/>
+  <link rel="canonical" href="https://thxbro.github.io/keepmoving/2020/04/14/重回基础之MySQL笔记系列（一）：MySQL的运行方式/"/>
 
 
 
 
 
-  <title>重回基础之MySQL系列（二）：MySQL的启动选项和系统变量 | keep moving</title>
+  <title>重回基础之MySQL系列（一）：MySQL的运行方式 | keep moving</title>
   
 
 
@@ -295,7 +297,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://thxbro.github.io/keepmoving/keepmoving/2020/04/14/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E5%90%AF%E5%8A%A8%E9%80%89%E9%A1%B9%E5%92%8C%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F/">
+    <link itemprop="mainEntityOfPage" href="https://thxbro.github.io/keepmoving/keepmoving/2020/04/14/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Chris">
@@ -312,7 +314,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">重回基础之MySQL系列（二）：MySQL的启动选项和系统变量</h1>
+          <h1 class="post-title" itemprop="name headline">重回基础之MySQL系列（一）：MySQL的运行方式</h1>
         
 
         <div class="post-meta">
@@ -324,7 +326,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-14T23:37:03+08:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-14T22:33:40+08:00">
                 2020-04-14
               </time>
             
@@ -389,139 +391,62 @@
 </blockquote>
 <a id="more"></a>
 
-<h2 id="启动选项和配置文件"><a href="#启动选项和配置文件" class="headerlink" title="启动选项和配置文件"></a>启动选项和配置文件</h2><p>对于<code>MySQL</code>服务器程序，我们可以指定诸如允许同时连入的客户端数量、客户端和服务器通信方式、表的默认存储引擎、查询缓存的大小等等设置；<code>MySQL</code>客户端程序，可以指定需要连接的服务器程序所在主机的主机名或IP地址、用户名及密码等信息。</p>
-<p>启动 <code>MySQL</code>程序时可指定启动参数，启动参数可放在命令行或配置文件。</p>
-<h3 id="在命令行上使用选项（仅对当次启动有效）"><a href="#在命令行上使用选项（仅对当次启动有效）" class="headerlink" title="在命令行上使用选项（仅对当次启动有效）"></a>在命令行上使用选项（仅对当次启动有效）</h3><p>在命令行中指定启动选项时需要在选项名前加上<code>--</code>前缀。另外，如果选项名是由多个单词构成的，它们之间可以由短划线<code>-</code>连接起来，也可以使用下划线<code>_</code>连接起来，也就是说<code>skip-networking</code>和<code>skip_networking</code>表示的含义是相同的。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">mysqld --skip-networking #禁止各客户端使用TCP&#x2F;IP网络进行通信</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">mysqld --default-storage-engine&#x3D;MyISAM #指定表的存储引擎</span></pre></td></tr></table></figure>
+<h2 id="MySQL的架构"><a href="#MySQL的架构" class="headerlink" title="MySQL的架构"></a>MySQL的架构</h2><img src="/keepmoving/2020/04/14/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F/1586876357383.jpg" class="" title="mysql客户端与服务端的连接方式">
 
-<p>故通用格式为：(<strong>选项名、=、选项值之间不可以有空白字符</strong>)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">--启动选项1[&#x3D;值1] --启动选项2[&#x3D;值2] ... --启动选项n[&#x3D;值n]</span></pre></td></tr></table></figure>
-
-<p>可通过<code>--help</code>选项查看程序支持的所有启动选项以及它们的默认值。(查看<code>mysqld</code>支持的启动选项有些特别，需要使用<code>mysqld --verbose --help</code>)</p>
-<h4 id="选项的长形式和短形式"><a href="#选项的长形式和短形式" class="headerlink" title="选项的长形式和短形式"></a>选项的长形式和短形式</h4><table>
-<thead>
-<tr>
-<th>长形式</th>
-<th>短形式</th>
-<th><strong>含义</strong></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>–host</td>
-<td>-h</td>
-<td>主机名</td>
-</tr>
-<tr>
-<td>–user</td>
-<td>-u</td>
-<td>用户名</td>
-</tr>
-<tr>
-<td>–password</td>
-<td>-p</td>
-<td>密码</td>
-</tr>
-<tr>
-<td>–port</td>
-<td>-P</td>
-<td>端口</td>
-</tr>
-<tr>
-<td>–version</td>
-<td>-V</td>
-<td>版本信息</td>
-</tr>
-</tbody></table>
-<p>短形式只需要一个 <code>-</code>即可。</p>
-<h3 id="配置文件中使用选项"><a href="#配置文件中使用选项" class="headerlink" title="配置文件中使用选项"></a>配置文件中使用选项</h3><p>把需要设置的启动选项都写在这个配置文件中，每次启动服务器的时候都从这个文件里加载相应的启动选项。</p>
-<h4 id="配置文件的路径"><a href="#配置文件的路径" class="headerlink" title="配置文件的路径"></a>配置文件的路径</h4><p><code>MySQL</code>程序在启动时会寻找多个路径下的配置文件，这些路径有的是固定的，有的是可以在命令行指定的。</p>
-<p>在类<code>UNIX</code>操作系统中，<code>MySQL</code>会按照下列路径来寻找配置文件：</p>
-<table>
-<thead>
-<tr>
-<th>路径名</th>
-<th>备注</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>/etc/my.cnf</td>
-<td></td>
-</tr>
-<tr>
-<td>/etc/mysql/my.cnf</td>
-<td></td>
-</tr>
-<tr>
-<td>SYSCONFDIR/my.cnf</td>
-<td></td>
-</tr>
-<tr>
-<td>$MYSQL_HOME/my.cnf</td>
-<td>特定于服务器的选项（仅限服务器）</td>
-</tr>
-<tr>
-<td>defaults-extra-file</td>
-<td>命令行指定的额外配置文件路径</td>
-</tr>
-<tr>
-<td>~/.my.cnf</td>
-<td>用户特定选项</td>
-</tr>
-<tr>
-<td>~/.mylogin.cnf</td>
-<td>用户特定的登录路径选项（仅限客户端）</td>
-</tr>
-</tbody></table>
-<ul>
-<li><code>MYSQL_HOME</code>是一个环境变量，该变量的值是我们自己设置的，表示一个路径，该路径下创建一个<code>my.cnf</code>配置文件，那么这个配置文件中只能放置关于启动服务器程序相关的选项。</li>
-<li>两个以<code>~</code>开头的路径是用户相关的，类<code>UNIX</code> 系统中都有一个当前登陆用户的概念，每个用户都可以有一个用户目录，<code>~</code>就代表这个用户目录，不同的类<code>UNIX</code>系统的用户都可以在自己的用户目录下创建<code>.my.cnf</code>或者<code>.mylogin.cnf</code>，换句话说，不同登录用户使用的<code>.my.cnf</code>或者<code>.mylogin.cnf</code>配置文件是不同的。</li>
+<h2 id="MySQL的安装"><a href="#MySQL的安装" class="headerlink" title="MySQL的安装"></a>MySQL的安装</h2><ul>
+<li>下载源代码自行编译安装</li>
+<li>直接使用官方提供的安装包</li>
 </ul>
-<h4 id="配置文件的内容"><a href="#配置文件的内容" class="headerlink" title="配置文件的内容"></a>配置文件的内容</h4><p>配置文件中的启动选项被划分为若干个组，每个组有一个组名，用中括号<code>[]</code>扩起来。</p>
-<p><strong>配置文件中只能使用长形式的选项，每行只指定一个选项，<code>=</code>周围可以有空白字符</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">[server]</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">(具体的启动选项...)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">option1     #这是option1，该选项不需要选项值</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">option2 &#x3D; value2      #这是option2，该选项需要选项值</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">...</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">[mysqld]</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">(具体的启动选项...)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">[mysqld_safe]</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">(具体的启动选项...)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">[client]</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">(具体的启动选项...)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">[mysql]</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">(具体的启动选项...)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">[mysqladmin]</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">(具体的启动选项...)</span></pre></td></tr></table></figure>
-
-<ul>
-<li><code>[server]</code>组下边的启动选项将作用于所有的服务器程序。</li>
-<li><code>[client]</code>组下边的启动选项将作用于所有的客户端程序。</li>
-</ul>
-<h4 id="特定MySQL版本的专用选项组"><a href="#特定MySQL版本的专用选项组" class="headerlink" title="特定MySQL版本的专用选项组"></a>特定MySQL版本的专用选项组</h4><p>我们可以在选项组的名称后加上特定的<code>MySQL</code>版本号，比如对于<code>[mysqld]</code>选项组来说，我们可以定义一个<code>[mysqld-5.7]</code>的选项组，它的含义和<code>[mysqld]</code>一样，只不过只有版本号为<code>5.7</code>的<code>mysqld</code>程序才能使用这个选项组中的选项。</p>
-<h4 id="配置文件的优先级"><a href="#配置文件的优先级" class="headerlink" title="配置文件的优先级"></a>配置文件的优先级</h4><p>依照上表中给定的顺序依次读取各个配置文件，如果该文件不存在则忽略。<strong>值得注意的是，如果我们在多个配置文件中设置了相同的启动选项，那以<u>最后一个配置文件</u>中的为准。</strong></p>
-<h4 id="同一个配置文件中多个组的优先级"><a href="#同一个配置文件中多个组的优先级" class="headerlink" title="同一个配置文件中多个组的优先级"></a>同一个配置文件中多个组的优先级</h4><p>同一个命令可以访问配置文件中的多个组，比如<code>mysqld</code>可以访问<code>[mysqld]</code>、<code>[server]</code>组，如果在同一个配置文件中，出现了不同组的相同配置项，<strong>将以<u>最后一个出现的组</u>中的启动选项为准</strong>。</p>
-<h4 id="defaults-file的使用"><a href="#defaults-file的使用" class="headerlink" title="defaults-file的使用"></a>defaults-file的使用</h4><p>该配置会导致mysql不会去默认的路径下搜索</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">#在程序启动的时候将只在&#x2F;tmp&#x2F;myconfig.txt路径下搜索配置文件</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">mysqld --defaults-file&#x3D;&#x2F;tmp&#x2F;myconfig.txt</span></pre></td></tr></table></figure>
-
 <blockquote>
-<p>使用<code>defaults-extra-file</code>可以指定额外的配置文件搜索路径（也就是说那些固定的配置文件路径也会被搜索）。</p>
+<p>windows或linux的安装请自行google</p>
 </blockquote>
-<h3 id="特别注意"><a href="#特别注意" class="headerlink" title="特别注意"></a>特别注意</h3><p><strong>如果同一个启动选项既出现在命令行中，又出现在配置文件中，那么以命令行中的启动选项为准。</strong></p>
-<h2 id="系统变量"><a href="#系统变量" class="headerlink" title="系统变量"></a>系统变量</h2><h3 id="查看系统变量"><a href="#查看系统变量" class="headerlink" title="查看系统变量"></a>查看系统变量</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">SHOW VARIABLES [LIKE 匹配的模式];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">#例子</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">SHOW VARIABLES like &#39;max_connections&#39;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">SHOW VARIABLES LIKE &#39;default%&#39;;</span></pre></td></tr></table></figure>
-
-<h3 id="设置系统变量"><a href="#设置系统变量" class="headerlink" title="设置系统变量"></a>设置系统变量</h3><h4 id="通过启动选项设置"><a href="#通过启动选项设置" class="headerlink" title="通过启动选项设置"></a>通过启动选项设置</h4><p>对于启动选项来说，如果启动选项名由多个单词组成，各个单词之间用短划线<code>-</code>或者下划线<code>_</code>连接起来都可以，但是它对应的系统变量的单词之间必须使用下划线<code>_</code>连接起来。</p>
-<h4 id="服务器程序运行过程中设置"><a href="#服务器程序运行过程中设置" class="headerlink" title="服务器程序运行过程中设置"></a>服务器程序运行过程中设置</h4><p>对于大部分系统变量来说，它们的值可以在服务器程序运行过程中进行动态修改而无需停止并重启服务器。</p>
-<p>系统变量拥有作用范围的概念，分为以下两种。</p>
+<h3 id="MySQL的安装目录"><a href="#MySQL的安装目录" class="headerlink" title="MySQL的安装目录"></a>MySQL的安装目录</h3><h4 id="bin目录"><a href="#bin目录" class="headerlink" title="bin目录"></a>bin目录</h4><p>bin目录一般都存放着安装程序的执行文件。</p>
+<p>mysql服务器程序</p>
 <ul>
-<li><code>GLOBAL</code>：全局变量，影响服务器的整体操作。</li>
-<li><code>SESSION</code>：会话变量，影响某个客户端连接的操作。（注：<code>SESSION</code>有个别名叫<code>LOCAL</code>）</li>
+<li><strong>mysqld</strong>：代表着<code>MySQL</code>服务器程序，运行这个可执行文件就可以直接启动一个服务器进程。</li>
+<li><strong>mysqld_safe</strong>：启动脚本，间接的调用<code>mysqld</code>，还会启动一个监控进程，监控进程在服务器进程挂了的时候，可以帮助重启它。另外，它会将服务器程序的出错信息和其他诊断信息重定向到某个文件中，产生出错日志。</li>
+<li><strong>mysql.server</strong>：启动脚本，它会间接的调用<code>mysqld_safe</code>，在调用<code>mysql.server</code>时在后边指定<code>start</code>参数就可以启动服务器程序。这个 <strong><em>mysql.server</em></strong> 文件其实是一个链接文件，它的实际文件是 <strong><em>../support-files/mysql.server</em></strong>。停止的话将<code>start</code>改为<code>stop</code>.</li>
+<li><strong>mysql_multi</strong>：运行多个<code>MySQL</code>服务器进程。可以对每一个服务器进程的启动或停止进行监控。</li>
 </ul>
-<p><strong>注意：</strong> 并不是所有系统变量都具有<code>GLOBAL</code>和<code>SESSION</code>的作用范围。</p>
+<p>mysql客户端程序</p>
+<p>启动客户端程序可使用 <strong>mysql</strong> , <strong>mysqladmin</strong> ，<strong>mysqldump</strong> ,<strong>mysqlcheck</strong>等等命令。</p>
 <ul>
-<li>有一些系统变量只具有<code>GLOBAL</code>作用范围，比方说<code>max_connections</code>。</li>
-<li>有一些系统变量只具有<code>SESSION</code>作用范围，比如<code>insert_id</code>，表示在对某个包含<code>AUTO_INCREMENT</code>列的表进行插入时，该列初始的值。</li>
-<li>有一些系统变量的值既具有<code>GLOBAL</code>作用范围，也具有<code>SESSION</code>作用范围，比如我们前边用到的<code>default_storage_engine</code>。</li>
+<li><strong>mysql</strong>：通过这个可执行文件可以让我们和服务器程序进程交互，也就是发送请求，接收服务器的处理结果。需要一些参数配合使用。例如 <code>mysql -h主机名  -u用户名 -p密码</code> 或 <code>mysql --host=主机名  --user=用户名 --password=密码</code></li>
 </ul>
-<p>在服务器启动时，会将每个全局变量初始化为其默认值（可以通过命令行或选项文件中指定的选项更改这些默认值）。然后<strong>服务器还为每个连接的客户端维护一组会话变量</strong>，客户端的会话变量在连接时使用相应全局变量的当前值初始化。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">SET [GLOBAL|SESSION] 系统变量名 &#x3D; 值;</span></pre></td></tr></table></figure>
-
-<p>注意：</p>
+<h2 id="客户端与服务端的链接过程"><a href="#客户端与服务端的链接过程" class="headerlink" title="客户端与服务端的链接过程"></a>客户端与服务端的链接过程</h2><p>服务器程序和客户端程序都是计算机中的进程，所以两者之间的通信连接本质是两个进程间的通信。支持三种通信方式。</p>
+<ul>
+<li>TCP/IP</li>
+<li>命名管道和共享内存(windows)</li>
+<li>Unix域套接字文件</li>
+</ul>
+<h3 id="TCP-IP（相同主机或不同主机）"><a href="#TCP-IP（相同主机或不同主机）" class="headerlink" title="TCP/IP（相同主机或不同主机）"></a>TCP/IP（相同主机或不同主机）</h3><p><code>MySQL</code>采用<code>TCP</code>作为服务器和客户端之间的网络通信协议。网络中的两个进程可以通过<code>IP地址 + 端口号</code>的方式来连接，这样进程之间就可以通过网络进行通信。<code>MySQL</code>服务器启动的时候会默认申请<code>3306</code>端口号，之后就在这个端口号上等待客户端进程进行连接。若想自定义端口，则可通过启动时指定相关端口 <code>mysqld -p端口号</code>。于此同时客户端连接时也需要通过大写P <code>-P</code>来指定。</p>
+<h3 id="Unix域套接字文件（相同主机）"><a href="#Unix域套接字文件（相同主机）" class="headerlink" title="Unix域套接字文件（相同主机）"></a>Unix域套接字文件（相同主机）</h3><p>服务器和客户端都运行在 <em>**同一台</em> **类unix的机器上，可在启动客户端程序时指定 <code>--protocol=socket</code> 启动参数，<code>MySQL</code>服务器程序默认监听的<code>Unix</code>域套接字文件路径为<code>/tmp/mysql.sock</code>，客户端程序也默认连接到这个<code>Unix</code>域套接字文件。若想改变默认的套接字文件，则可在启动服务端程序时通过指定 <code>socket</code>参数，<code>mysqld --socket=/tmp/a.txt</code>。同样，客户端也同样需要指定相同的套接字文件才可连接成功。</p>
+<h2 id="服务器处理客户端请求"><a href="#服务器处理客户端请求" class="headerlink" title="服务器处理客户端请求"></a>服务器处理客户端请求</h2><p>服务器程序处理来自客户端的查询请求大致需要经过三个部分，分别是<code>连接管理</code>、<code>解析与优化</code>、<code>存储引擎</code>。</p>
+<h3 id="连接管理"><a href="#连接管理" class="headerlink" title="连接管理"></a>连接管理</h3><p>客户端可通过以上几种方式与服务器链接，客户端与服务器建立连接时需要携带主机信息，用户名，密码进行认证，认证成功后获取当前账户的权限，认证失败则拒绝访问。每当有一个客户端进程连接到服务器进程时，服务器进程都会创建一个线程来专门处理与这个客户端的交互，当该客户端退出时会与服务器断开连接，服务器并不会立即把与该客户端交互的线程销毁掉，而是把它缓存起来，在另一个新的客户端再进行连接时，把这个缓存的线程分配给该新客户端。</p>
+<h3 id="解析与优化"><a href="#解析与优化" class="headerlink" title="解析与优化"></a>解析与优化</h3><h4 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h4><p>MySQL处理查询请求的过程，会将刚刚处理的查询请求缓存起来，若遇到相同的请求则会直接返回结果，查询缓存可以在不同客户端之间共享。</p>
 <blockquote>
-<p>如果在设置系统变量的语句中省略了作用范围，默认的作用范围就是<code>SESSION</code>。</p>
-<p>同理，<code>SHOW VARIABLES</code>语句查看的<code>SESSION</code>作用范围的系统变量。</p>
+<p>如果两个查询请求在任何字符上的不同（例如：空格、注释、大小写），都会导致缓存不会命中或查询请求中包含某些系统函数（例如now函数每次获取的值也不一样）、用户自定义变量和函数、一些系统表如 mysql 、information_schema等同样也不会被缓存。</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">SHOW [GLOBAL|SESSION] VARIABLES [LIKE 匹配的模式];</span></pre></td></tr></table></figure>
+<p><strong>缓存失效频繁的原因</strong>：如果对缓存结果中的表进行<strong><em>结构或数据的变更</em></strong>都会导致缓存失效并删除。</p>
+<blockquote>
+<p>从MySQL 5.7.20开始，不推荐使用查询缓存，并在MySQL 8.0中删除。因为查询缓存有时可以提高性能，但不得不维护缓存而造成的开销。</p>
+</blockquote>
+<p>MySQL提供了这种“按需使用”的方式：可以将参数 <code>query_cache_type</code> 设置成 <code>DEMAND</code>，这样对于默认的 SQL 语句都不使用查询缓存。对于确定使用缓存的语句使用 <code>SQL_CACHE</code>进行显示指定。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">select SQL_CACHE * from T where ID &#x3D; 1；</span></pre></td></tr></table></figure>
 
-<h2 id="状态变量"><a href="#状态变量" class="headerlink" title="状态变量"></a>状态变量</h2><p><code>MySQL</code>服务器程序中维护了好多关于程序运行状态的变量，它们被称为<code>状态变量</code>。不可设置，与系统变量相似。<code>状态变量</code>也有<code>GLOBAL</code>和<code>SESSION</code>两个作用范围的，所以查看<code>状态变量</code>的语句可以这么写：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">SHOW [GLOBAL|SESSION] STATUS [LIKE 匹配的模式]; #默认session</span></pre></td></tr></table></figure>
-
+<h4 id="语法解析"><a href="#语法解析" class="headerlink" title="语法解析"></a>语法解析</h4><p>若没有命中缓存，客户端发送过来的请求，<code>MySQL</code>服务器首先要对请求文本进行词法分析，语法分析等操作确保sql语句是正确的。</p>
+<ul>
+<li><strong>词法分析</strong>：MySQL 需要识别出里面的请求文本字符串分别是什么，代表什么。</li>
+<li><strong>语法分析</strong>：根据语法规则判断你sql语句是否满足MySQL的语法。</li>
+</ul>
+<h4 id="查询优化"><a href="#查询优化" class="headerlink" title="查询优化"></a>查询优化</h4><p>经过语法解析之后，mysql能够确定sql具体是要做什么的。<code>MySQL</code>的优化程序会对我们的语句做一些优化，如外连接转换为内连接、表达式简化、子查询转为连接等等。<strong>优化的结果就是生成一个执行计划</strong>，这个执行计划表明了应该使用哪些索引进行查询，表之间的连接顺序是啥样的。可使用 <code>explain</code>语句来查看某个语句的执行计划。</p>
+<h3 id="存储引擎"><a href="#存储引擎" class="headerlink" title="存储引擎"></a>存储引擎</h3><p>经过了查询优化之后，只需按照生成的执行计划调用底层存储引擎提供的API，获取到数据后返回给客户端就好了。</p>
+<blockquote>
+<p><code>MySQL</code>服务器把数据的存储和提取操作都封装到了一个叫<code>存储引擎</code>的模块。<code>MySQL</code>提供了各式各样的<code>存储引擎</code>，不同<code>存储引擎</code>管理的表具体的存储结构可能不同，采用的存取算法也可能不同。常见的存储引擎：mysiam，innodb，memory等。</p>
+</blockquote>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>MySQL把<code>连接管理</code>、<code>查询缓存</code>、<code>语法解析</code>、<code>查询优化</code>这些并不涉及真实数据存储的功能划分为<code>MySQL server</code>的功能，把真实存取数据的功能划分为<code>存储引擎</code>的功能。各种不同的存储引擎向上边的<code>MySQL server</code>层提供统一的调用接口（也就是存储引擎API）。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="">极客时间 mysql45讲</a></p>
+<p><a href="">掘金 mysql小册子</a></p>
 
       
     </div>
@@ -552,8 +477,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/keepmoving/2020/04/14/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F/" rel="next" title="重回基础之MySQL系列（一）：MySQL的运行方式">
-                <i class="fa fa-chevron-left"></i> 重回基础之MySQL系列（一）：MySQL的运行方式
+              <a href="/keepmoving/2020/02/14/Jenkins/" rel="next" title="Jenkins">
+                <i class="fa fa-chevron-left"></i> Jenkins
               </a>
             
           </div>
@@ -561,6 +486,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/keepmoving/2020/04/14/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E5%90%AF%E5%8A%A8%E9%80%89%E9%A1%B9%E5%92%8C%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F/" rel="prev" title="重回基础之MySQL系列（二）：MySQL的启动选项和系统变量">
+                重回基础之MySQL系列（二）：MySQL的启动选项和系统变量 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -637,7 +566,7 @@
               
                 <a href="/keepmoving/archives%7C%7C%20archive">
               
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -692,7 +621,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#序"><span class="nav-number">1.</span> <span class="nav-text">序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动选项和配置文件"><span class="nav-number">2.</span> <span class="nav-text">启动选项和配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#在命令行上使用选项（仅对当次启动有效）"><span class="nav-number">2.1.</span> <span class="nav-text">在命令行上使用选项（仅对当次启动有效）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#选项的长形式和短形式"><span class="nav-number">2.1.1.</span> <span class="nav-text">选项的长形式和短形式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置文件中使用选项"><span class="nav-number">2.2.</span> <span class="nav-text">配置文件中使用选项</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#配置文件的路径"><span class="nav-number">2.2.1.</span> <span class="nav-text">配置文件的路径</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#配置文件的内容"><span class="nav-number">2.2.2.</span> <span class="nav-text">配置文件的内容</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#特定MySQL版本的专用选项组"><span class="nav-number">2.2.3.</span> <span class="nav-text">特定MySQL版本的专用选项组</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#配置文件的优先级"><span class="nav-number">2.2.4.</span> <span class="nav-text">配置文件的优先级</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#同一个配置文件中多个组的优先级"><span class="nav-number">2.2.5.</span> <span class="nav-text">同一个配置文件中多个组的优先级</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#defaults-file的使用"><span class="nav-number">2.2.6.</span> <span class="nav-text">defaults-file的使用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#特别注意"><span class="nav-number">2.3.</span> <span class="nav-text">特别注意</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#系统变量"><span class="nav-number">3.</span> <span class="nav-text">系统变量</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#查看系统变量"><span class="nav-number">3.1.</span> <span class="nav-text">查看系统变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置系统变量"><span class="nav-number">3.2.</span> <span class="nav-text">设置系统变量</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#通过启动选项设置"><span class="nav-number">3.2.1.</span> <span class="nav-text">通过启动选项设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#服务器程序运行过程中设置"><span class="nav-number">3.2.2.</span> <span class="nav-text">服务器程序运行过程中设置</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#状态变量"><span class="nav-number">4.</span> <span class="nav-text">状态变量</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#序"><span class="nav-number">1.</span> <span class="nav-text">序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL的架构"><span class="nav-number">2.</span> <span class="nav-text">MySQL的架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL的安装"><span class="nav-number">3.</span> <span class="nav-text">MySQL的安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL的安装目录"><span class="nav-number">3.1.</span> <span class="nav-text">MySQL的安装目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#bin目录"><span class="nav-number">3.1.1.</span> <span class="nav-text">bin目录</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端与服务端的链接过程"><span class="nav-number">4.</span> <span class="nav-text">客户端与服务端的链接过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-IP（相同主机或不同主机）"><span class="nav-number">4.1.</span> <span class="nav-text">TCP/IP（相同主机或不同主机）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Unix域套接字文件（相同主机）"><span class="nav-number">4.2.</span> <span class="nav-text">Unix域套接字文件（相同主机）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器处理客户端请求"><span class="nav-number">5.</span> <span class="nav-text">服务器处理客户端请求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#连接管理"><span class="nav-number">5.1.</span> <span class="nav-text">连接管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解析与优化"><span class="nav-number">5.2.</span> <span class="nav-text">解析与优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#查询缓存"><span class="nav-number">5.2.1.</span> <span class="nav-text">查询缓存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#语法解析"><span class="nav-number">5.2.2.</span> <span class="nav-text">语法解析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询优化"><span class="nav-number">5.2.3.</span> <span class="nav-text">查询优化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#存储引擎"><span class="nav-number">5.3.</span> <span class="nav-text">存储引擎</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">5.4.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">6.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
             
 
           </div>

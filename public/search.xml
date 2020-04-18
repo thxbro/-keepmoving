@@ -1,8 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>重回基础之MySQL笔记系列（三）：字符集与比较规则</title>
+    <url>/keepmoving/2020/04/18/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E6%AF%94%E8%BE%83%E8%A7%84%E5%88%99/</url>
+    <content><![CDATA[<h2 id="序"><a href="#序" class="headerlink" title="序"></a>序</h2><blockquote>
+<p>重回基础系列之MySQL系列主要是基于对 <strong>极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子</strong>的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。</p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="字符集与比较规则"><a href="#字符集与比较规则" class="headerlink" title="字符集与比较规则"></a>字符集与比较规则</h2><h3 id="字符集"><a href="#字符集" class="headerlink" title="字符集"></a>字符集</h3><p>计算机通过建立字符与二进制的映射关系来存储字符串，而字符集就是描述<strong>某个字符范围内的编码规则</strong>。（定义了字符的范围与映射规则）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">graph LR</span></pre></td></tr><tr><td class="code"><pre><span class="line">A[字符] --&gt;|编码|B(二进制数据)</span></pre></td></tr><tr><td class="code"><pre><span class="line">B--&gt;|解码|A</span></pre></td></tr></table></figure>
+
+<h4 id="常用的字符集"><a href="#常用的字符集" class="headerlink" title="常用的字符集"></a>常用的字符集</h4><ul>
+<li><code>ASCII</code>字符集</li>
+</ul>
+<p>共收录128个字符，包括空格、标点符号、数字、大小写字母和一些不可见字符。由于总共才128个字符，所以可以使用1个字节来进行编码，我们看一些字符的编码方式：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#39;L&#39; -&gt;  01001100（十六进制：0x4C，十进制：76）</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#39;M&#39; -&gt;  01001101（十六进制：0x4D，十进制：77）</span></pre></td></tr></table></figure>
+
+<ul>
+<li><code>ISO 8859-1</code>字符集</li>
+</ul>
+<p>共收录256个字符，是在<code>ASCII</code>字符集的基础上又扩充了128个西欧常用字符(包括德法两国的字母)，也可以使用1个字节来进行编码。这个字符集也有一个别名<code>latin1</code>。</p>
+<ul>
+<li><code>GB2312</code>字符集</li>
+</ul>
+<p>收录了汉字以及拉丁字母、希腊字母、日文平假名及片假名字母、俄语西里尔字母。其中收录汉字6763个，其他文字符号682个。同时这种字符集又兼容<code>ASCII</code>字符集，所以在编码方式上显得有些奇怪：</p>
+<ul>
+<li>如果该字符在<code>ASCII</code>字符集中，则采用1字节编码。</li>
+<li>否则采用2字节编码。</li>
+</ul>
+<p>这种表示一个字符需要的字节数可能不同的编码方式称为<code>变长编码方式</code>。比方说字符串<code>&#39;爱u&#39;</code>，其中<code>&#39;爱&#39;</code>需要用2个字节进行编码，编码后的十六进制表示为<code>0xB0AE</code>，<code>&#39;u&#39;</code>需要用1个字节进行编码，编码后的十六进制表示为<code>0x75</code>，所以拼合起来就是<code>0xB0AE75</code>。</p>
+<ul>
+<li><code>GBK</code>字符集</li>
+</ul>
+<p><code>GBK</code>字符集只是在收录字符范围上对<code>GB2312</code>字符集作了扩充，编码方式上兼容<code>GB2312</code>。</p>
+<ul>
+<li><code>utf8</code>字符集</li>
+</ul>
+<p>收录地球上能想到的所有字符，而且还在不断扩充。这种字符集兼容<code>ASCII</code>字符集，采用变长编码方式，编码一个字符需要使用1～4个字节，比方说这样：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#39;L&#39; -&gt;  01001100（十六进制：0x4C）</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#39;啊&#39; -&gt;  111001011001010110001010（十六进制：0xE5958A）</span></pre></td></tr></table></figure>
+
+<p>注意：</p>
+<blockquote>
+<p>utf8只是Unicode字符集的一种编码方案，Unicode字符集可以采用utf8、utf16、utf32这几种编码方案，utf8使用1～4个字节编码一个字符，utf16使用2个或4个字节编码一个字符，utf32使用4个字节编码一个字符。</p>
+</blockquote>
+<h3 id="比较规则"><a href="#比较规则" class="headerlink" title="比较规则"></a>比较规则</h3><p>如何比较两个字符的大小？最简单的方式是通过二进制大小来比较，但英文字母大小写本质上是相同的若通过二进制大小比较则不合适，故可先同转大写或小写再比较。<strong>同一种字符集可以有多种比较规则。</strong></p>
+<h2 id="MySQL中支持的字符集和排序规则"><a href="#MySQL中支持的字符集和排序规则" class="headerlink" title="MySQL中支持的字符集和排序规则"></a>MySQL中支持的字符集和排序规则</h2><h3 id="MySQL中的utf8和utf8mb4"><a href="#MySQL中的utf8和utf8mb4" class="headerlink" title="MySQL中的utf8和utf8mb4"></a>MySQL中的utf8和utf8mb4</h3><p><code>MySQL</code>中字符集表示一个字符所用最大字节长度在某些方面会影响系统的存储和性能，故mysql的设计者在utf8上又划分了2个概念：</p>
+<ul>
+<li><code>utf8mb3（utf8）</code>：阉割过的<code>utf8</code>字符集，只使用1～3个字节表示字符。</li>
+<li><code>utf8mb4</code>：正宗的<code>utf8</code>字符集，使用1～4个字节表示字符。</li>
+</ul>
+<blockquote>
+<p>常用的字符使用1～3个字节就可以表示使用utf8，但比如存储一些emoji的表情，就要使用utf8mb4。</p>
+</blockquote>
+<p>字符集的查看：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SHOW (CHARACTER SET|CHARSET) [LIKE 匹配的模式];</span></pre></td></tr></table></figure>
+
+<p>比较规则的查看：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SHOW COLLATION [LIKE 匹配的模式];</span></pre></td></tr></table></figure>
+
+<h3 id="字符集和比较规则的应用"><a href="#字符集和比较规则的应用" class="headerlink" title="字符集和比较规则的应用"></a>字符集和比较规则的应用</h3><h4 id="各级别的字符集和比较规则"><a href="#各级别的字符集和比较规则" class="headerlink" title="各级别的字符集和比较规则"></a>各级别的字符集和比较规则</h4><p><code>MySQL</code>有4个级别的字符集和比较规则（若未指定，则跟随上一级），分别是：</p>
+<ul>
+<li>服务器级别(启动或运行)</li>
+</ul>
+<p><code>MySQL</code>提供了两个系统变量来表示服务器级别的字符集和比较规则：<code>character_set_server</code></p>
+<p>和 <code>collation_server</code></p>
+<ul>
+<li>数据库级别(建数据库或修改时)</li>
+</ul>
+<p>系统变量为：<code>character_set_database</code> 和 <code>collation_database</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CREATE DATABASE 数据库名</span></pre></td></tr><tr><td class="code"><pre><span class="line">    [[DEFAULT] CHARACTER SET 字符集名称]</span></pre></td></tr><tr><td class="code"><pre><span class="line">    [[DEFAULT] COLLATE 比较规则名称];</span></pre></td></tr><tr><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="code"><pre><span class="line">ALTER DATABASE 数据库名</span></pre></td></tr><tr><td class="code"><pre><span class="line">    [[DEFAULT] CHARACTER SET 字符集名称]</span></pre></td></tr><tr><td class="code"><pre><span class="line">    [[DEFAULT] COLLATE 比较规则名称];</span></pre></td></tr></table></figure>
+
+<p>注意：<strong><em>character_set_database</em></strong> 和 <strong><em>collation_database</em></strong> 这两个系统变量是只读的，我们不能通过修改这两个变量的值而改变当前数据库的字符集和比较规则。</p>
+<ul>
+<li>表级别(建表或修改时)</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CREATE TABLE 表名 (列的信息)</span></pre></td></tr><tr><td class="code"><pre><span class="line">    [[DEFAULT] CHARACTER SET 字符集名称]</span></pre></td></tr><tr><td class="code"><pre><span class="line">    [COLLATE 比较规则名称]]</span></pre></td></tr><tr><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="code"><pre><span class="line">ALTER TABLE 表名</span></pre></td></tr><tr><td class="code"><pre><span class="line">    [[DEFAULT] CHARACTER SET 字符集名称]</span></pre></td></tr><tr><td class="code"><pre><span class="line">    [COLLATE 比较规则名称]</span></pre></td></tr></table></figure>
+
+<ul>
+<li>列级别（建列或修改时）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CREATE TABLE 表名(</span></pre></td></tr><tr><td class="code"><pre><span class="line">    列名 字符串类型 [CHARACTER SET 字符集名称] [COLLATE 比较规则名称],</span></pre></td></tr><tr><td class="code"><pre><span class="line">    其他列...</span></pre></td></tr><tr><td class="code"><pre><span class="line">);</span></pre></td></tr><tr><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="code"><pre><span class="line">ALTER TABLE 表名 MODIFY 列名 字符串类型 [CHARACTER SET 字符集名称] [COLLATE 比较规则名称];</span></pre></td></tr></table></figure>
+
+<p><strong>注意：</strong></p>
+<blockquote>
+<p>字符集和比较规则是互相有联系的，故：</p>
+<ul>
+<li>只修改字符集，则比较规则将变为修改后的字符集默认的比较规则。</li>
+<li>只修改比较规则，则字符集将变为修改后的比较规则对应的字符集。</li>
+</ul>
+</blockquote>
+<h2 id="客户端和服务器通信中的字符集"><a href="#客户端和服务器通信中的字符集" class="headerlink" title="客户端和服务器通信中的字符集"></a>客户端和服务器通信中的字符集</h2>]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>back to basics</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>重回基础之MySQL系列（二）：MySQL的启动选项和系统变量</title>
-    <url>/keepmoving/2020/04/14/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E5%90%AF%E5%8A%A8%E9%80%89%E9%A1%B9%E5%92%8C%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F/</url>
+    <url>/keepmoving/2020/04/14/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E5%90%AF%E5%8A%A8%E9%80%89%E9%A1%B9%E5%92%8C%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F/</url>
     <content><![CDATA[<h2 id="序"><a href="#序" class="headerlink" title="序"></a>序</h2><blockquote>
 <p>重回基础系列之MySQL系列主要是基于对 <strong>极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子</strong>的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。</p>
 </blockquote>
@@ -151,13 +249,13 @@
   </entry>
   <entry>
     <title>重回基础之MySQL系列（一）：MySQL的运行方式</title>
-    <url>/keepmoving/2020/04/14/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F/</url>
+    <url>/keepmoving/2020/04/14/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F/</url>
     <content><![CDATA[<h2 id="序"><a href="#序" class="headerlink" title="序"></a>序</h2><blockquote>
 <p>重回基础系列之MySQL系列主要是基于对 <strong>极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子</strong>的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。</p>
 </blockquote>
 <a id="more"></a>
 
-<h2 id="MySQL的架构"><a href="#MySQL的架构" class="headerlink" title="MySQL的架构"></a>MySQL的架构</h2><img src="/keepmoving/2020/04/14/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F/1586876357383.jpg" class="" title="mysql客户端与服务端的连接方式">
+<h2 id="MySQL的架构"><a href="#MySQL的架构" class="headerlink" title="MySQL的架构"></a>MySQL的架构</h2><img src="/keepmoving/2020/04/14/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F/1586876357383.jpg" class="" title="mysql客户端与服务端的连接方式">
 
 <h2 id="MySQL的安装"><a href="#MySQL的安装" class="headerlink" title="MySQL的安装"></a>MySQL的安装</h2><ul>
 <li>下载源代码自行编译安装</li>
