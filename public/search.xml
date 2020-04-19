@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>重回基础之HTTP协议笔记系列（一）：HTTP协议与其相关的概念</title>
+    <url>/keepmoving/2020/04/19/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AHTTP%E5%8D%8F%E8%AE%AE%E4%B8%8E%E5%85%B6%E7%9B%B8%E5%85%B3%E7%9A%84%E6%A6%82%E5%BF%B5/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
     <title>重回基础之MySQL笔记系列（三）：字符集与比较规则</title>
     <url>/keepmoving/2020/04/18/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E6%AF%94%E8%BE%83%E8%A7%84%E5%88%99/</url>
     <content><![CDATA[<h2 id="序"><a href="#序" class="headerlink" title="序"></a>序</h2><blockquote>
@@ -9,7 +14,7 @@
 <a id="more"></a>
 
 <h2 id="字符集与比较规则"><a href="#字符集与比较规则" class="headerlink" title="字符集与比较规则"></a>字符集与比较规则</h2><h3 id="字符集"><a href="#字符集" class="headerlink" title="字符集"></a>字符集</h3><p>计算机通过建立字符与二进制的映射关系来存储字符串，而字符集就是描述<strong>某个字符范围内的编码规则</strong>。（定义了字符的范围与映射规则）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">graph LR</span></pre></td></tr><tr><td class="code"><pre><span class="line">A[字符] --&gt;|编码|B(二进制数据)</span></pre></td></tr><tr><td class="code"><pre><span class="line">B--&gt;|解码|A</span></pre></td></tr></table></figure>
+<img src="/keepmoving/2020/04/18/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E6%AF%94%E8%BE%83%E8%A7%84%E5%88%99/1587307096905.jpg" class="" title="编码与解码">
 
 <h4 id="常用的字符集"><a href="#常用的字符集" class="headerlink" title="常用的字符集"></a>常用的字符集</h4><ul>
 <li><code>ASCII</code>字符集</li>
@@ -45,7 +50,10 @@
 <p>utf8只是Unicode字符集的一种编码方案，Unicode字符集可以采用utf8、utf16、utf32这几种编码方案，utf8使用1～4个字节编码一个字符，utf16使用2个或4个字节编码一个字符，utf32使用4个字节编码一个字符。</p>
 </blockquote>
 <h3 id="比较规则"><a href="#比较规则" class="headerlink" title="比较规则"></a>比较规则</h3><p>如何比较两个字符的大小？最简单的方式是通过二进制大小来比较，但英文字母大小写本质上是相同的若通过二进制大小比较则不合适，故可先同转大写或小写再比较。<strong>同一种字符集可以有多种比较规则。</strong></p>
-<h2 id="MySQL中支持的字符集和排序规则"><a href="#MySQL中支持的字符集和排序规则" class="headerlink" title="MySQL中支持的字符集和排序规则"></a>MySQL中支持的字符集和排序规则</h2><h3 id="MySQL中的utf8和utf8mb4"><a href="#MySQL中的utf8和utf8mb4" class="headerlink" title="MySQL中的utf8和utf8mb4"></a>MySQL中的utf8和utf8mb4</h3><p><code>MySQL</code>中字符集表示一个字符所用最大字节长度在某些方面会影响系统的存储和性能，故mysql的设计者在utf8上又划分了2个概念：</p>
+<blockquote>
+<p>比较规则的作用通常体现比较字符串大小的表达式以及对某个字符串列进行排序中。</p>
+</blockquote>
+<h2 id="MySQL中支持的字符集比较规则"><a href="#MySQL中支持的字符集比较规则" class="headerlink" title="MySQL中支持的字符集比较规则"></a>MySQL中支持的字符集比较规则</h2><h3 id="MySQL中的utf8和utf8mb4"><a href="#MySQL中的utf8和utf8mb4" class="headerlink" title="MySQL中的utf8和utf8mb4"></a>MySQL中的utf8和utf8mb4</h3><p><code>MySQL</code>中字符集表示一个字符所用最大字节长度在某些方面会影响系统的存储和性能，故mysql的设计者在utf8上又划分了2个概念：</p>
 <ul>
 <li><code>utf8mb3（utf8）</code>：阉割过的<code>utf8</code>字符集，只使用1～3个字节表示字符。</li>
 <li><code>utf8mb4</code>：正宗的<code>utf8</code>字符集，使用1～4个字节表示字符。</li>
@@ -90,7 +98,33 @@
 <li>只修改比较规则，则字符集将变为修改后的比较规则对应的字符集。</li>
 </ul>
 </blockquote>
-<h2 id="客户端和服务器通信中的字符集"><a href="#客户端和服务器通信中的字符集" class="headerlink" title="客户端和服务器通信中的字符集"></a>客户端和服务器通信中的字符集</h2>]]></content>
+<h2 id="客户端和服务器通信中的字符集"><a href="#客户端和服务器通信中的字符集" class="headerlink" title="客户端和服务器通信中的字符集"></a>客户端和服务器通信中的字符集</h2><p>若客户端与服务器之间使用的字符集不一致，就会导致乱码的产生。比如客户端使用utf8进行编码，服务器使用ascii进行解码，这样就会导致服务器产生乱码。</p>
+<h4 id="MySQL中字符集的转换"><a href="#MySQL中字符集的转换" class="headerlink" title="MySQL中字符集的转换"></a>MySQL中字符集的转换</h4><p>将收到的字符串进行a字符集进行解码，然后再使用b字符集进行编码，这个过程称之为 <strong>字符集的转换</strong>。</p>
+<p>客户端与服务器中间的传输本质上是字符串（某种字符集编码的二进制数据），从发送请求到返回结果这个过程中伴随着多次字符集的转换，在这个过程中会用到3个系统变量。</p>
+<table>
+<thead>
+<tr>
+<th>系统变量</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>character_set_client</td>
+<td>服务器解码请求时使用的字符集</td>
+</tr>
+<tr>
+<td>character_set_connection</td>
+<td>服务器处理请求时会把请求字符串从<code>characer_set_client</code>转为<code>character_set_connection</code></td>
+</tr>
+<tr>
+<td>character_set_results</td>
+<td>服务器向客户端返回数据时使用的字符集</td>
+</tr>
+</tbody></table>
+<p>为了避免无谓的字符转换，通常都把 <strong><em>character_set_client</em></strong> 、<strong><em>character_set_connection</em></strong>、<strong><em>character_set_results</em></strong> 这三个系统变量设置成和客户端使用的字符集一致。MySQL提供了一条非常简便的语句：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SET NAMES 字符集名; # 等同于同时设置上述3个变量</span></pre></td></tr></table></figure>
+
+]]></content>
       <categories>
         <category>mysql</category>
       </categories>
