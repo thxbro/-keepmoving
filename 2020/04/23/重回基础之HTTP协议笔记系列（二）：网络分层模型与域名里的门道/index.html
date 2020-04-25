@@ -79,18 +79,22 @@
 
 
 
-<meta name="description" content="序 重回基础系列之MySQL系列主要是基于对 极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。">
+<meta name="description" content="序 重回基础系列之HTTP协议系列主要是基于对 极客时间的《透视HTTP协议》课程的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。  TCP&#x2F;IP 网络分层模型   TCP&#x2F;IP 协议总共有四层，自下而上，每一层支撑上层，又被下层支撑着。 第一层是”链路层”（link layer），负责在以太网，WIFI这样的底层网络发送数据包，工作在网卡">
 <meta name="keywords" content="back to basics">
 <meta property="og:type" content="article">
-<meta property="og:title" content="重回基础之MySQL笔记系列（三）：字符集与比较规则">
-<meta property="og:url" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;18&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E6%AF%94%E8%BE%83%E8%A7%84%E5%88%99&#x2F;index.html">
+<meta property="og:title" content="重回基础之HTTP协议笔记系列（二）：网络分层模型与域名里的门道">
+<meta property="og:url" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;23&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93&#x2F;index.html">
 <meta property="og:site_name" content="keep moving">
-<meta property="og:description" content="序 重回基础系列之MySQL系列主要是基于对 极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。">
+<meta property="og:description" content="序 重回基础系列之HTTP协议系列主要是基于对 极客时间的《透视HTTP协议》课程的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。  TCP&#x2F;IP 网络分层模型   TCP&#x2F;IP 协议总共有四层，自下而上，每一层支撑上层，又被下层支撑着。 第一层是”链路层”（link layer），负责在以太网，WIFI这样的底层网络发送数据包，工作在网卡">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;18&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E6%AF%94%E8%BE%83%E8%A7%84%E5%88%99&#x2F;1587307096905.jpg">
-<meta property="og:updated_time" content="2020-04-19T14:40:41.351Z">
+<meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;23&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93&#x2F;2b8fee82b58cc8da88c74a33f2146703.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;23&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93&#x2F;3abcf1462621ff86758a8d9571c07cdc.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;23&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93&#x2F;70bc19acacf2245fa841349f15cb7a6f.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;23&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93&#x2F;6b020454987543efdd1cf6ddec784bf2.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;23&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93&#x2F;e51df3245609880641043af65bba94ac.png">
+<meta property="og:updated_time" content="2020-04-23T16:32:10.809Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;18&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E6%AF%94%E8%BE%83%E8%A7%84%E5%88%99&#x2F;1587307096905.jpg">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;23&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93&#x2F;2b8fee82b58cc8da88c74a33f2146703.png">
 
 
 
@@ -120,13 +124,13 @@
 
 
 
-  <link rel="canonical" href="https://thxbro.github.io/keepmoving/2020/04/18/重回基础之MySQL笔记系列（三）：字符集与比较规则/"/>
+  <link rel="canonical" href="https://thxbro.github.io/keepmoving/2020/04/23/重回基础之HTTP协议笔记系列（二）：网络分层模型与域名里的门道/"/>
 
 
 
 
 
-  <title>重回基础之MySQL笔记系列（三）：字符集与比较规则 | keep moving</title>
+  <title>重回基础之HTTP协议笔记系列（二）：网络分层模型与域名里的门道 | keep moving</title>
   
 
 
@@ -297,7 +301,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://thxbro.github.io/keepmoving/keepmoving/2020/04/18/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E6%AF%94%E8%BE%83%E8%A7%84%E5%88%99/">
+    <link itemprop="mainEntityOfPage" href="https://thxbro.github.io/keepmoving/keepmoving/2020/04/23/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Chris">
@@ -314,7 +318,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">重回基础之MySQL笔记系列（三）：字符集与比较规则</h1>
+          <h1 class="post-title" itemprop="name headline">重回基础之HTTP协议笔记系列（二）：网络分层模型与域名里的门道</h1>
         
 
         <div class="post-meta">
@@ -326,8 +330,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-18T22:58:51+08:00">
-                2020-04-18
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-23T00:13:46+08:00">
+                2020-04-23
               </time>
             
 
@@ -349,8 +353,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/keepmoving/categories/mysql/" itemprop="url" rel="index">
-                    <span itemprop="name">mysql</span>
+                  <a href="/keepmoving/categories/http/" itemprop="url" rel="index">
+                    <span itemprop="name">http</span>
                   </a>
                 </span>
 
@@ -387,121 +391,88 @@
 
       
         <h2 id="序"><a href="#序" class="headerlink" title="序"></a>序</h2><blockquote>
-<p>重回基础系列之MySQL系列主要是基于对 <strong>极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子</strong>的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。</p>
+<p>重回基础系列之HTTP协议系列主要是基于对 <strong>极客时间的《透视HTTP协议》课程</strong>的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。</p>
 </blockquote>
-<a id="more"></a>
-
-<h2 id="字符集与比较规则"><a href="#字符集与比较规则" class="headerlink" title="字符集与比较规则"></a>字符集与比较规则</h2><h3 id="字符集"><a href="#字符集" class="headerlink" title="字符集"></a>字符集</h3><p>计算机通过建立字符与二进制的映射关系来存储字符串，而字符集就是描述<strong>某个字符范围内的编码规则</strong>。（定义了字符的范围与映射规则）</p>
-<img src="/keepmoving/2020/04/18/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E6%AF%94%E8%BE%83%E8%A7%84%E5%88%99/1587307096905.jpg" class="" title="编码与解码">
-
-<h4 id="常用的字符集"><a href="#常用的字符集" class="headerlink" title="常用的字符集"></a>常用的字符集</h4><ul>
-<li><code>ASCII</code>字符集</li>
-</ul>
-<p>共收录128个字符，包括空格、标点符号、数字、大小写字母和一些不可见字符。由于总共才128个字符，所以可以使用1个字节来进行编码，我们看一些字符的编码方式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">&#39;L&#39; -&gt;  01001100（十六进制：0x4C，十进制：76）</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">&#39;M&#39; -&gt;  01001101（十六进制：0x4D，十进制：77）</span></pre></td></tr></table></figure>
+<h2 id="TCP-IP-网络分层模型"><a href="#TCP-IP-网络分层模型" class="headerlink" title="TCP/IP 网络分层模型"></a>TCP/IP 网络分层模型</h2><img src="/keepmoving/2020/04/23/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93/2b8fee82b58cc8da88c74a33f2146703.png" class="" title="tcp&#x2F;ip协议栈">
 
 <ul>
-<li><code>ISO 8859-1</code>字符集</li>
+<li>TCP/IP 协议总共有四层，自下而上，每一层支撑上层，又被下层支撑着。</li>
+<li>第一层是”链路层”（link layer），负责在以太网，WIFI这样的底层网络发送数据包，工作在网卡这个层次，使用MAC地址来标记网络上的设备，所以也可叫MAC层。<ul>
+<li>mac层的传输单位是帧</li>
 </ul>
-<p>共收录256个字符，是在<code>ASCII</code>字符集的基础上又扩充了128个西欧常用字符(包括德法两国的字母)，也可以使用1个字节来进行编码。这个字符集也有一个别名<code>latin1</code>。</p>
-<ul>
-<li><code>GB2312</code>字符集</li>
+</li>
+<li>第二层叫“网际层”，IP 协议定义了“IP 地址”的概念，所以就可以在“链接层”的基础上，用 IP 地址取代 MAC 地址（把 MAC 编号转换成了四位数字），把许许多多的局域网、广域网连接成一个虚拟的巨大网络，在这个网络里找设备时只要把 IP 地址再“翻译”成 MAC 地址就可以了。<ul>
+<li>ip层的传输单位是包</li>
 </ul>
-<p>收录了汉字以及拉丁字母、希腊字母、日文平假名及片假名字母、俄语西里尔字母。其中收录汉字6763个，其他文字符号682个。同时这种字符集又兼容<code>ASCII</code>字符集，所以在编码方式上显得有些奇怪：</p>
-<ul>
-<li>如果该字符在<code>ASCII</code>字符集中，则采用1字节编码。</li>
-<li>否则采用2字节编码。</li>
+</li>
+<li>第三层叫“传输层”（transport layer），这个层次协议的职责是<strong>保证数据在 IP 地址标记的两点之间“可靠”地传输</strong>，是 TCP 协议工作的层次，另外还有它的一个“小伙伴”UDP。<ul>
+<li>tcp：有状态，需要建立连接，保证数据不丢失，连续的字节流，有先后顺序</li>
+<li>udp：无状态，不需要建立连接，不保证数据不丢失，分散的小数据包，有序发，无序收</li>
+<li>tcp的传输单位是段</li>
 </ul>
-<p>这种表示一个字符需要的字节数可能不同的编码方式称为<code>变长编码方式</code>。比方说字符串<code>&#39;爱u&#39;</code>，其中<code>&#39;爱&#39;</code>需要用2个字节进行编码，编码后的十六进制表示为<code>0xB0AE</code>，<code>&#39;u&#39;</code>需要用1个字节进行编码，编码后的十六进制表示为<code>0x75</code>，所以拼合起来就是<code>0xB0AE75</code>。</p>
-<ul>
-<li><code>GBK</code>字符集</li>
+</li>
+<li>第四层叫“应用层”（application layer），由于下面的三层把基础打得非常好，所以在这一层就“百花齐放”了，有各种面向具体应用的协议。例如 Telnet、SSH、FTP、SMTP 等等，当然还有我们的 HTTP。<ul>
+<li>http 的传输单位则是消息或报文</li>
 </ul>
-<p><code>GBK</code>字符集只是在收录字符范围上对<code>GB2312</code>字符集作了扩充，编码方式上兼容<code>GB2312</code>。</p>
-<ul>
-<li><code>utf8</code>字符集</li>
-</ul>
-<p>收录地球上能想到的所有字符，而且还在不断扩充。这种字符集兼容<code>ASCII</code>字符集，采用变长编码方式，编码一个字符需要使用1～4个字节，比方说这样：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">&#39;L&#39; -&gt;  01001100（十六进制：0x4C）</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">&#39;啊&#39; -&gt;  111001011001010110001010（十六进制：0xE5958A）</span></pre></td></tr></table></figure>
-
-<p>注意：</p>
-<blockquote>
-<p>utf8只是Unicode字符集的一种编码方案，Unicode字符集可以采用utf8、utf16、utf32这几种编码方案，utf8使用1～4个字节编码一个字符，utf16使用2个或4个字节编码一个字符，utf32使用4个字节编码一个字符。</p>
-</blockquote>
-<h3 id="比较规则"><a href="#比较规则" class="headerlink" title="比较规则"></a>比较规则</h3><p>如何比较两个字符的大小？最简单的方式是通过二进制大小来比较，但英文字母大小写本质上是相同的若通过二进制大小比较则不合适，故可先同转大写或小写再比较。<strong>同一种字符集可以有多种比较规则。</strong></p>
-<blockquote>
-<p>比较规则的作用通常体现比较字符串大小的表达式以及对某个字符串列进行排序中。</p>
-</blockquote>
-<h2 id="MySQL中支持的字符集比较规则"><a href="#MySQL中支持的字符集比较规则" class="headerlink" title="MySQL中支持的字符集比较规则"></a>MySQL中支持的字符集比较规则</h2><h3 id="MySQL中的utf8和utf8mb4"><a href="#MySQL中的utf8和utf8mb4" class="headerlink" title="MySQL中的utf8和utf8mb4"></a>MySQL中的utf8和utf8mb4</h3><p><code>MySQL</code>中字符集表示一个字符所用最大字节长度在某些方面会影响系统的存储和性能，故mysql的设计者在utf8上又划分了2个概念：</p>
-<ul>
-<li><code>utf8mb3（utf8）</code>：阉割过的<code>utf8</code>字符集，只使用1～3个字节表示字符。</li>
-<li><code>utf8mb4</code>：正宗的<code>utf8</code>字符集，使用1～4个字节表示字符。</li>
+</li>
 </ul>
 <blockquote>
-<p>常用的字符使用1～3个字节就可以表示使用utf8，但比如存储一些emoji的表情，就要使用utf8mb4。</p>
+<p>大多数情况下传输层及以下都由操作系统负责。</p>
 </blockquote>
-<p>字符集的查看：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">SHOW (CHARACTER SET|CHARSET) [LIKE 匹配的模式];</span></pre></td></tr></table></figure>
-
-<p>比较规则的查看：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">SHOW COLLATION [LIKE 匹配的模式];</span></pre></td></tr></table></figure>
-
-<h3 id="字符集和比较规则的应用"><a href="#字符集和比较规则的应用" class="headerlink" title="字符集和比较规则的应用"></a>字符集和比较规则的应用</h3><h4 id="各级别的字符集和比较规则"><a href="#各级别的字符集和比较规则" class="headerlink" title="各级别的字符集和比较规则"></a>各级别的字符集和比较规则</h4><p><code>MySQL</code>有4个级别的字符集和比较规则（若未指定，则跟随上一级），分别是：</p>
-<ul>
-<li>服务器级别(启动或运行)</li>
-</ul>
-<p><code>MySQL</code>提供了两个系统变量来表示服务器级别的字符集和比较规则：<code>character_set_server</code></p>
-<p>和 <code>collation_server</code></p>
-<ul>
-<li>数据库级别(建数据库或修改时)</li>
-</ul>
-<p>系统变量为：<code>character_set_database</code> 和 <code>collation_database</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">CREATE DATABASE 数据库名</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    [[DEFAULT] CHARACTER SET 字符集名称]</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    [[DEFAULT] COLLATE 比较规则名称];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">ALTER DATABASE 数据库名</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">    [[DEFAULT] CHARACTER SET 字符集名称]</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    [[DEFAULT] COLLATE 比较规则名称];</span></pre></td></tr></table></figure>
-
-<p>注意：<strong><em>character_set_database</em></strong> 和 <strong><em>collation_database</em></strong> 这两个系统变量是只读的，我们不能通过修改这两个变量的值而改变当前数据库的字符集和比较规则。</p>
-<ul>
-<li>表级别(建表或修改时)</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">CREATE TABLE 表名 (列的信息)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    [[DEFAULT] CHARACTER SET 字符集名称]</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    [COLLATE 比较规则名称]]</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">ALTER TABLE 表名</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">    [[DEFAULT] CHARACTER SET 字符集名称]</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    [COLLATE 比较规则名称]</span></pre></td></tr></table></figure>
+<h2 id="OSI-网络分层模型"><a href="#OSI-网络分层模型" class="headerlink" title="OSI 网络分层模型"></a>OSI 网络分层模型</h2><img src="/keepmoving/2020/04/23/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93/3abcf1462621ff86758a8d9571c07cdc.png" class="" title="osgi协议栈">
 
 <ul>
-<li>列级别（建列或修改时）</li>
+<li>第一层：物理层，网络的物理形式，例如电缆、光纤、网卡、集线器等等。</li>
+<li>第二层：数据链路层，它基本相当于 TCP/IP 的链接层；</li>
+<li>第三层：网络层，相当于 TCP/IP 里的网际层；</li>
+<li>第四层：传输层，相当于 TCP/IP 里的传输层；</li>
+<li>第五层：会话层，维护网络中的连接状态，即保持会话和同步;</li>
+<li>第六层：表示层，把数据转换为合适、可理解的语法和语义；</li>
+<li>第七层：应用层，面向具体的应用传输数据。</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">CREATE TABLE 表名(</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    列名 字符串类型 [CHARACTER SET 字符集名称] [COLLATE 比较规则名称],</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    其他列...</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">ALTER TABLE 表名 MODIFY 列名 字符串类型 [CHARACTER SET 字符集名称] [COLLATE 比较规则名称];</span></pre></td></tr></table></figure>
-
-<p><strong>注意：</strong></p>
 <blockquote>
-<p>字符集和比较规则是互相有联系的，故：</p>
-<ul>
-<li>只修改字符集，则比较规则将变为修改后的字符集默认的比较规则。</li>
-<li>只修改比较规则，则字符集将变为修改后的比较规则对应的字符集。</li>
-</ul>
+<p>OSI出现的缘由是国际标准组织（ISO）想要将各种网络协议进行统一，所以设计出了一个新的网路分层协议。仅仅作为一个参考，一个标准。</p>
 </blockquote>
-<h2 id="客户端和服务器通信中的字符集"><a href="#客户端和服务器通信中的字符集" class="headerlink" title="客户端和服务器通信中的字符集"></a>客户端和服务器通信中的字符集</h2><p>若客户端与服务器之间使用的字符集不一致，就会导致乱码的产生。比如客户端使用utf8进行编码，服务器使用ascii进行解码，这样就会导致服务器产生乱码。</p>
-<h4 id="MySQL中字符集的转换"><a href="#MySQL中字符集的转换" class="headerlink" title="MySQL中字符集的转换"></a>MySQL中字符集的转换</h4><p>将收到的字符串进行a字符集进行解码，然后再使用b字符集进行编码，这个过程称之为 <strong>字符集的转换</strong>。</p>
-<p>客户端与服务器中间的传输本质上是字符串（某种字符集编码的二进制数据），从发送请求到返回结果这个过程中伴随着多次字符集的转换，在这个过程中会用到3个系统变量。</p>
-<table>
-<thead>
-<tr>
-<th>系统变量</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>character_set_client</td>
-<td>服务器解码请求时使用的字符集</td>
-</tr>
-<tr>
-<td>character_set_connection</td>
-<td>服务器处理请求时会把请求字符串从<code>characer_set_client</code>转为<code>character_set_connection</code></td>
-</tr>
-<tr>
-<td>character_set_results</td>
-<td>服务器向客户端返回数据时使用的字符集</td>
-</tr>
-</tbody></table>
-<p>为了避免无谓的字符转换，通常都把 <strong><em>character_set_client</em></strong> 、<strong><em>character_set_connection</em></strong>、<strong><em>character_set_results</em></strong> 这三个系统变量设置成和客户端使用的字符集一致。MySQL提供了一条非常简便的语句：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">SET NAMES 字符集名; # 等同于同时设置上述3个变量</span></pre></td></tr></table></figure>
+<h2 id="TCP-IP-协议栈的工作方式"><a href="#TCP-IP-协议栈的工作方式" class="headerlink" title="TCP/IP 协议栈的工作方式"></a>TCP/IP 协议栈的工作方式</h2><img src="/keepmoving/2020/04/23/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93/70bc19acacf2245fa841349f15cb7a6f.png" class="" title="tcp&#x2F;ip协议栈的工作">
 
+<blockquote>
+<p>HTTP 利用 TCP/IP 协议栈逐层打包再拆包，实现了数据传输，但下面的细节并不可见。</p>
+</blockquote>
+<h2 id="域名里的门道"><a href="#域名里的门道" class="headerlink" title="域名里的门道"></a>域名里的门道</h2><h3 id="域名解析"><a href="#域名解析" class="headerlink" title="域名解析"></a>域名解析</h3><img src="/keepmoving/2020/04/23/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93/6b020454987543efdd1cf6ddec784bf2.png" class="" title="dns核心系统">
+
+<p>DNS 的核心系统是一个三层的树状、分布式服务，基本对应域名的结构：</p>
+<ul>
+<li>根域名服务器（Root DNS Server）：管理顶级域名服务器，返回“com”“net”“cn”等顶级域名服务器的 IP 地址；</li>
+<li>顶级域名服务器（Top-level DNS Server）：管理各自域名下的权威域名服务器，比如 com 顶级域名服务器可以返回 apple.com 域名服务器的 IP 地址；</li>
+<li>权威域名服务器（Authoritative DNS Server）：管理自己域名下主机的 IP 地址，比如 apple.com 权威域名服务器可以返回 <a href="http://www.apple.com" target="_blank" rel="noopener">www.apple.com</a> 的 IP 地址。</li>
+</ul>
+<p>即使全世界共有 13 组根域名服务器，又有数百台的镜像，保证一定能够被访问，但全世界的用户共同访问也会导致DNS系统的压力，为了缓解核心DNS系统的访问压力，通过使用 <strong>缓存</strong> 来解决。</p>
+<ol>
+<li>很多大公司，网络运营商会有自己的DNS服务器，作为用户访问DNS查询的代理，代替用户访问核心DNS系统。这些野生服务器被称为“非权威域名服务器”，可以缓存之前查询的结果。<ul>
+<li>著名的有google的8.8.8.8，Microsoft 的“4.2.2.1”，还有 CloudFlare 的“1.1.1.1”。</li>
+</ul>
+</li>
+<li>操作系统也会对DNS解析结果进行缓存，如果你之前访问过某个域名网站，那么下次再访问时，会先从操作系统里拿到对应的IP地址。<ul>
+<li>操作系统dnscache clinet 服务进行DNS缓存的（你在任务管理器里面可以看到一个dns客户端进程）</li>
+</ul>
+</li>
+<li>操作系统中还有一个”主机映射“文件，通常是一个可编辑文本，在Linux中是”/etc/hosts“，在Windows中是“C:\WINDOWS\system32\drivers\etc\hosts”，如果操作系统在缓存里找不到 DNS 记录就会找这个文件。</li>
+</ol>
+<img src="/keepmoving/2020/04/23/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93/e51df3245609880641043af65bba94ac.png" class="">
+
+<h3 id="域名用法"><a href="#域名用法" class="headerlink" title="域名用法"></a>域名用法</h3><ol>
+<li>域名代替ip地址，更换ip就能让域名指向不同ip地址的机器。</li>
+<li>基于域名实现的负载均衡，一个域名绑定多台主机，可通过轮询算法向服务器发起请求，实现负载均衡。</li>
+</ol>
+<blockquote>
+<p>不怀好意的 DNS:</p>
+<ol>
+<li>“域名屏蔽”，对域名直接不解析，返回错误，让你无法拿到 IP 地址，也就无法访问网站；</li>
+<li>“域名劫持”，也叫“域名污染”，你要访问 A 网站，但 DNS 给了你 B 网站。</li>
+</ol>
+</blockquote>
+<h3 id="域名解析过程"><a href="#域名解析过程" class="headerlink" title="域名解析过程"></a>域名解析过程</h3><p>比如你有一个网站要上线，你在域名注册商那里申请了abc.com,那么你的域名A记录就保存在这个域名注册商的DNS服务器上，该DNS服务器称为权威域名服务器。</p>
+<p>当客户端访问abc.com时，先查找浏览器DNS缓存，没有则查找操作系统DNS缓存，在这一阶段是操作系统dnscache clinet 服务进行DNS缓存的（你在任务管理器里面可以看到一个dns客户端进程，就是这玩意实现缓存的），如果还是没有则查找hosts文件中的域名记录。然后依然没有的话则访问电脑上设置的DNS服务器IP，比如三大营运商的dns服务器或者谷歌的8.8.8.8，此时这一层的DNS服务器称为“野生DNS缓存服务器”，也就是非权威域名服务器。如果还是没有则非权威域名服务器会去查找 根域名服务器-顶级域名服务器-二级域名服务器-权威域名服务器 ，这样客户端就在权威域名服务器上找到了abc.com对应的IP了，这个IP可以是多个，每次客户端请求的时候域名服务器会根据负载均衡算法分配一个IP给你。当DNS缓存失效了，则重新开始新一轮的域名请求。<br>总结如下：<br>浏览器缓存-&gt;操作系统dnscache -&gt;hosts文件-&gt;非权威域名服务器-&gt;根域名服务器-&gt;顶级域名服务器-&gt;二级域名服务器-&gt;权威域名服务器。<br>其中非权威域名服务器还包括LDNS（企业内网DNS服务器），三大营运商DNS，谷歌公开的DNS，微软公开的DNS等。</p>
 
       
     </div>
@@ -532,8 +503,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/keepmoving/2020/04/14/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AMySQL%E7%9A%84%E5%90%AF%E5%8A%A8%E9%80%89%E9%A1%B9%E5%92%8C%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F/" rel="next" title="重回基础之MySQL系列（二）：MySQL的启动选项和系统变量">
-                <i class="fa fa-chevron-left"></i> 重回基础之MySQL系列（二）：MySQL的启动选项和系统变量
+              <a href="/keepmoving/2020/04/20/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89-INNODB%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/" rel="next" title="重回基础之MySQL笔记系列（四）:INNODB存储结构">
+                <i class="fa fa-chevron-left"></i> 重回基础之MySQL笔记系列（四）:INNODB存储结构
               </a>
             
           </div>
@@ -541,10 +512,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/keepmoving/2020/04/19/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AHTTP%E5%8D%8F%E8%AE%AE%E4%B8%8E%E5%85%B6%E7%9B%B8%E5%85%B3%E7%9A%84%E6%A6%82%E5%BF%B5/" rel="prev" title="重回基础之HTTP协议笔记系列（一）：HTTP协议与其相关的概念">
-                重回基础之HTTP协议笔记系列（一）：HTTP协议与其相关的概念 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -676,7 +643,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#序"><span class="nav-number">1.</span> <span class="nav-text">序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#字符集与比较规则"><span class="nav-number">2.</span> <span class="nav-text">字符集与比较规则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#字符集"><span class="nav-number">2.1.</span> <span class="nav-text">字符集</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#常用的字符集"><span class="nav-number">2.1.1.</span> <span class="nav-text">常用的字符集</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#比较规则"><span class="nav-number">2.2.</span> <span class="nav-text">比较规则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL中支持的字符集比较规则"><span class="nav-number">3.</span> <span class="nav-text">MySQL中支持的字符集比较规则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL中的utf8和utf8mb4"><span class="nav-number">3.1.</span> <span class="nav-text">MySQL中的utf8和utf8mb4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字符集和比较规则的应用"><span class="nav-number">3.2.</span> <span class="nav-text">字符集和比较规则的应用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#各级别的字符集和比较规则"><span class="nav-number">3.2.1.</span> <span class="nav-text">各级别的字符集和比较规则</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端和服务器通信中的字符集"><span class="nav-number">4.</span> <span class="nav-text">客户端和服务器通信中的字符集</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#MySQL中字符集的转换"><span class="nav-number">4.0.1.</span> <span class="nav-text">MySQL中字符集的转换</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#序"><span class="nav-number">1.</span> <span class="nav-text">序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-IP-网络分层模型"><span class="nav-number">2.</span> <span class="nav-text">TCP/IP 网络分层模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OSI-网络分层模型"><span class="nav-number">3.</span> <span class="nav-text">OSI 网络分层模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-IP-协议栈的工作方式"><span class="nav-number">4.</span> <span class="nav-text">TCP/IP 协议栈的工作方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#域名里的门道"><span class="nav-number">5.</span> <span class="nav-text">域名里的门道</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#域名解析"><span class="nav-number">5.1.</span> <span class="nav-text">域名解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#域名用法"><span class="nav-number">5.2.</span> <span class="nav-text">域名用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#域名解析过程"><span class="nav-number">5.3.</span> <span class="nav-text">域名解析过程</span></a></li></ol></li></ol></div>
             
 
           </div>

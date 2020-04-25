@@ -89,7 +89,8 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;20&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89-INNODB%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84&#x2F;1587394589403.jpg">
 <meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;20&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89-INNODB%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84&#x2F;169710e8fafc21aa.jpg">
-<meta property="og:updated_time" content="2020-04-20T15:35:41.038Z">
+<meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;20&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89-INNODB%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84&#x2F;169710e97718ef01.jpg">
+<meta property="og:updated_time" content="2020-04-22T16:10:47.556Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;20&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89-INNODB%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84&#x2F;1587394589403.jpg">
 
@@ -370,7 +371,7 @@
 </blockquote>
 <a id="more"></a>
 
-<h2 id="InnoDB页如何存储"><a href="#InnoDB页如何存储" class="headerlink" title="InnoDB页如何存储"></a>InnoDB页如何存储</h2><p>将数据划分为若干个页，以页作为磁盘和内存之间交互的基本单位，InnoDB中页的大小一般为 <strong><em>16</em></strong> KB。</p>
+<h2 id="InnoDB如何存储"><a href="#InnoDB如何存储" class="headerlink" title="InnoDB如何存储"></a>InnoDB如何存储</h2><p>将数据划分为若干个页，以<strong>页</strong>作为磁盘和内存之间交互的基本单位，InnoDB中页的大小一般为 <strong><em>16</em></strong> KB。</p>
 <img src="/keepmoving/2020/04/20/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89-INNODB%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/1587394589403.jpg" class="" title="innodb 磁盘与内存交互">
 
 <h3 id="innodb行格式"><a href="#innodb行格式" class="headerlink" title="innodb行格式"></a>innodb行格式</h3><p>数据通过记录存在表中的存放方式被称为 <strong>行格式</strong> ，innodb分别有4种不同类型的行格式。</p>
@@ -382,7 +383,115 @@
 </ul>
 <h4 id="compact"><a href="#compact" class="headerlink" title="compact"></a>compact</h4><img src="/keepmoving/2020/04/20/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89-INNODB%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/169710e8fafc21aa.jpg" class="" title="compact方式存储数据">
 
+<h5 id="记录的额外信息"><a href="#记录的额外信息" class="headerlink" title="记录的额外信息"></a>记录的额外信息</h5><h6 id="变长字段长度列表"><a href="#变长字段长度列表" class="headerlink" title="变长字段长度列表"></a>变长字段长度列表</h6><p><code>MySQL</code>支持变长字段（<code>VARCHAR(M)</code>、<code>VARBINARY(M)</code>、<code>TEXT</code>类型，<code>BLOB</code>类型），变长字段存储多少字节的数据是不固定的，所以 变长字段需要存储两部分内容：1. 真正的数据内容 2.所占字节数。</p>
+<blockquote>
+<p>在<code>Compact</code>行格式中，把所有变长字段的真实数据占用的字节长度都存放在记录的开头部位，从而形成一个变长字段长度列表，各变长字段数据占用的字节数<strong>按照列的顺序<u>逆序</u>存放</strong>，是逆序存放！</p>
+</blockquote>
+<p>注意：</p>
+<ul>
+<li>变长字段允许存储的最大字节数（<code>M×W</code>）（m为存储字符最大值，w为字符集所占字节）超过255字节并且真实存储的字节数（<code>L</code>）超过127字节，则使用2个字节，否则使用1个字节。</li>
+<li>变长字段长度列表中只存储值为 <strong><em>非NULL</em></strong> 的列内容占用的长度，值为 <strong><em>NULL</em></strong> 的列的长度是不储存的 。</li>
+<li>表中所有的列都不是变长的数据类型，则不会存在变长字段长度列表。</li>
+</ul>
+<h6 id="NULL值列表"><a href="#NULL值列表" class="headerlink" title="NULL值列表"></a>NULL值列表</h6><p><code>Compact</code>行格式把存储NULL值的列统一管理起来，存储到NULL值列表。</p>
+<blockquote>
+<p>每个允许存储<code>NULL</code>的列对应一个二进制位，二进制位按照列的顺序逆序排列.</p>
+<ul>
+<li>二进制位的值为<code>1</code>时，代表该列的值为<code>NULL</code>。</li>
+<li>二进制位的值为<code>0</code>时，代表该列的值不为<code>NULL</code>。</li>
+</ul>
+</blockquote>
+<p>注意：</p>
+<ul>
+<li>表中没有允许存储 <strong><em>NULL</em></strong> 的列，则不会存在<strong><em>NULL</em></strong>值列表。</li>
+<li><code>NULL值列表</code>必须用整数个字节的位表示，如果使用的二进制位个数不是整数个字节，则在字节的高位补<code>0</code>。<ul>
+<li>1个字节 = 8位</li>
+</ul>
+</li>
+</ul>
+<h6 id="记录头信息"><a href="#记录头信息" class="headerlink" title="记录头信息"></a>记录头信息</h6><p>记录头信息用于描述记录，由固定的<code>5</code>个字节组成。<code>5</code>个字节也就是<code>40</code>个二进制位，不同的位代表不同的意思。</p>
+<img src="/keepmoving/2020/04/20/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89-INNODB%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/169710e97718ef01.jpg" class="" title="头信息">
 
+<table>
+<thead>
+<tr>
+<th><strong>名称</strong></th>
+<th>大小（单位：bit）</th>
+<th><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>预留位1</td>
+<td>1</td>
+<td>没有使用</td>
+</tr>
+<tr>
+<td>预留位2</td>
+<td>1</td>
+<td>没有使用</td>
+</tr>
+<tr>
+<td>delete_mask</td>
+<td>1</td>
+<td>标记该记录是否被删除</td>
+</tr>
+<tr>
+<td>min_rec_mask</td>
+<td>1</td>
+<td>B+树的每层非叶子节点中的最小记录都会添加该标记</td>
+</tr>
+<tr>
+<td>n_owned</td>
+<td>4</td>
+<td>表示当前记录拥有的记录数</td>
+</tr>
+<tr>
+<td>heap_no</td>
+<td>13</td>
+<td>表示当前记录在记录堆的位置信息</td>
+</tr>
+<tr>
+<td>record_type</td>
+<td>3</td>
+<td>表示当前记录的类型，<code>0</code>表示普通记录，<code>1</code>表示B+树非叶子节点记录，<code>2</code>表示最小记录，<code>3</code>表示最大记录</td>
+</tr>
+<tr>
+<td>next_record</td>
+<td>16</td>
+<td>表示下一条记录的相对位置</td>
+</tr>
+</tbody></table>
+<h5 id="记录的真实数据"><a href="#记录的真实数据" class="headerlink" title="记录的真实数据"></a>记录的真实数据</h5><p>除了定义的列数据外，<code>mysql</code>会为每个记录添加一些隐藏列，如下</p>
+<table>
+<thead>
+<tr>
+<th>列名</th>
+<th>是否必须</th>
+<th>占用空间</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>DB_ROW_ID</td>
+<td>n</td>
+<td>6字节</td>
+<td>行ID，唯一标识一条记录</td>
+</tr>
+<tr>
+<td>DB_TRX_ID</td>
+<td>y</td>
+<td>6字节</td>
+<td>事务ID</td>
+</tr>
+<tr>
+<td>DB_ROLL_PTR</td>
+<td>y</td>
+<td>7字节</td>
+<td>回滚指针</td>
+</tr>
+</tbody></table>
+<p>主键生成策略：优先使用用户自定义主键，若无则寻找unique列，若再无，则默认添加<strong>DB_ROW_ID</strong>隐藏列作为主键。</p>
+<h6 id="CHAR-M-列的存储格式"><a href="#CHAR-M-列的存储格式" class="headerlink" title="CHAR(M)列的存储格式"></a>CHAR(M)列的存储格式</h6>
       
     </div>
     
@@ -421,6 +530,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/keepmoving/2020/04/23/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93/" rel="prev" title="重回基础之HTTP协议笔记系列（二）：网络分层模型与域名里的门道">
+                重回基础之HTTP协议笔记系列（二）：网络分层模型与域名里的门道 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -497,7 +610,7 @@
               
                 <a href="/keepmoving/archives%7C%7C%20archive">
               
-                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -552,7 +665,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#序"><span class="nav-number">1.</span> <span class="nav-text">序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB页如何存储"><span class="nav-number">2.</span> <span class="nav-text">InnoDB页如何存储</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#innodb行格式"><span class="nav-number">2.1.</span> <span class="nav-text">innodb行格式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#compact"><span class="nav-number">2.1.1.</span> <span class="nav-text">compact</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#序"><span class="nav-number">1.</span> <span class="nav-text">序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB如何存储"><span class="nav-number">2.</span> <span class="nav-text">InnoDB如何存储</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#innodb行格式"><span class="nav-number">2.1.</span> <span class="nav-text">innodb行格式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#compact"><span class="nav-number">2.1.1.</span> <span class="nav-text">compact</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#记录的额外信息"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">记录的额外信息</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#变长字段长度列表"><span class="nav-number">2.1.1.1.1.</span> <span class="nav-text">变长字段长度列表</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#NULL值列表"><span class="nav-number">2.1.1.1.2.</span> <span class="nav-text">NULL值列表</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#记录头信息"><span class="nav-number">2.1.1.1.3.</span> <span class="nav-text">记录头信息</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#记录的真实数据"><span class="nav-number">2.1.1.2.</span> <span class="nav-text">记录的真实数据</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#CHAR-M-列的存储格式"><span class="nav-number">2.1.1.2.1.</span> <span class="nav-text">CHAR(M)列的存储格式</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
