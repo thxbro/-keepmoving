@@ -1,6 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>重回基础之MySQL笔记系列（五）:INNODB数据页结构</title>
+    <url>/keepmoving/2020/04/27/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89-INNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84/</url>
+    <content><![CDATA[<h2 id="序"><a href="#序" class="headerlink" title="序"></a>序</h2><blockquote>
+<p>重回基础系列之MySQL系列主要是基于对 <strong>极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子</strong>的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。</p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="数据页结构"><a href="#数据页结构" class="headerlink" title="数据页结构"></a>数据页结构</h2><img src="/keepmoving/2020/04/27/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89-INNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84/16f13ee1e2dfac7c.png" class="" title="数据页结构">
+
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>中文字</th>
+<th>占用空间大小</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>File Header</td>
+<td>文件头部</td>
+<td><code>38</code>字节</td>
+<td>页的一些通用信息</td>
+</tr>
+<tr>
+<td>Page Header</td>
+<td>页面头部</td>
+<td><code>56</code>字节</td>
+<td>数据页专有的一些信息</td>
+</tr>
+<tr>
+<td>Infimum + Supremum</td>
+<td>最小记录和最大记录</td>
+<td><code>26</code>字节</td>
+<td>两个虚拟的行记录</td>
+</tr>
+<tr>
+<td>User Records</td>
+<td>用户记录</td>
+<td>不确定</td>
+<td>实际存储的行记录内容</td>
+</tr>
+<tr>
+<td>Free Space</td>
+<td>空闲空间</td>
+<td>不确定</td>
+<td>页中尚未使用的空间</td>
+</tr>
+<tr>
+<td>Page Directory</td>
+<td>页面目录</td>
+<td>不确定</td>
+<td>页中的某些记录的相对位置</td>
+</tr>
+<tr>
+<td>File Trailer</td>
+<td>文件尾部</td>
+<td><code>8</code>字节</td>
+<td>校验页是否完整</td>
+</tr>
+</tbody></table>
+<h2 id="数据页如何存储记录"><a href="#数据页如何存储记录" class="headerlink" title="数据页如何存储记录"></a>数据页如何存储记录</h2><p>记录进入数据页时从 <code>free space</code>中申请一个记录的存储空间划分到 <code>user records</code>，直至用完，若仍要插入则申请新的数据页，过程如图：</p>
+<img src="/keepmoving/2020/04/27/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89-INNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84/16a95c0fe86555ed.png" class="" title="记录进入数据页过程">
+
+<h3 id="记录头信息的相关内容解释"><a href="#记录头信息的相关内容解释" class="headerlink" title="记录头信息的相关内容解释"></a>记录头信息的相关内容解释</h3><p>现在将记录插入表中如图所示：（图中所显示的都是10进制）</p>
+<img src="/keepmoving/2020/04/27/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89-INNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84/16a95c10773d8cee.png" class="" title="记录再表中的表示">
+
+<ul>
+<li>delete_mask</li>
+</ul>
+<p>属性标记着当前记录是否被删除，占用1个二进制位，0表示没删除，1表示已删除。</p>
+<blockquote>
+<p>被删除的记录还在页中，是因为移除它们之后把其他的记录在磁盘上重新排列需要性能消耗，故所有被删除掉的记录都会组成一个所谓的<code>垃圾链表</code>，在这个链表中的记录占用的空间称之为所谓的<code>可重用空间</code>，之后若有新纪录插入到表中，则会覆盖这些空间。</p>
+</blockquote>
+<ul>
+<li>heap_no</li>
+</ul>
+<p>表示当前记录在页中的位置。</p>
+<blockquote>
+<p>每个页中都innodb都会自动插入两条虚拟记录，分别是<strong>最小记录</strong>和<strong>最大记录</strong>。他们的heap_no分别为0和1。这两条记录都是由5字节大小的<code>记录头信息</code>和8字节大小的一个固定的部分组成的（最小记录【Infimum】和最大记录【Supremum】）。他们都单独存放在 <strong>Infimum + Supremum</strong>的部分中，而不存在 <strong>User Records</strong>。</p>
+</blockquote>
+<ul>
+<li>next_record</li>
+</ul>
+<p>表示从当前记录的真实数据到下一条记录的真实数据的地址偏移量。</p>
+<blockquote>
+<p>比方说第一条记录的<code>next_record</code>值为<code>32</code>，意味着从第一条记录的真实数据的地址处向后找<code>32</code>个字节便是下一条记录的真实数据。</p>
+<p><strong><em>Infimum记录（也就是最小记录）</em></strong> 的下一条记录就是本页中主键值最小的用户记录，而本页中主键值最大的用户记录的下一条记录就是 <strong>*Supremum记录（也就是最大记录）</strong>。</p>
+</blockquote>
+<img src="/keepmoving/2020/04/27/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89-INNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84/16a95c1084c440b4.png" class="" title="next_record示意图">
+
+
+
+<p><strong>所以，不论我们怎么对页中的记录做增删改操作，InnoDB始终会维护一条记录的单链表，链表中的各个节点是按照主键值由小到大的顺序连接起来的。</strong></p>
+<h3 id="Page-Directory（页目录）"><a href="#Page-Directory（页目录）" class="headerlink" title="Page Directory（页目录）"></a>Page Directory（页目录）</h3><p>innodb是按照如下步骤存放页目录数据，页目录的单位是 slot。</p>
+<ol>
+<li><p>innodb将所有正常的记录（包括最大和最小记录，不包括标记为已删除的记录）划分为几个组。</p>
+</li>
+<li><p>每个组的最后一条记录（也就是组内最大的那条记录）的头信息中的<code>n_owned</code>属性表示该记录拥有多少条记录，也就是该组内共有几条记录。</p>
+</li>
+<li><p>将每个组的最后一条记录的地址偏移量单独提取出来按顺序存储到靠近<code>页</code>的尾部的地方，这个地方就是所谓的<code>Page Directory</code>，也就是<code>页目录</code>（此时应该返回头看看页面各个部分的图）。页面目录中的这些地址偏移量被称为<code>槽</code>（英文名：<code>Slot</code>），所以这个页面目录就是由<code>槽</code>组成的。</p>
+</li>
+</ol>
+<blockquote>
+<p>注意：每个分组中的记录条数是有规定的：</p>
+<ul>
+<li>对于最小记录所在的分组只能有 <strong><em>1</em></strong> 条记录，</li>
+<li>最大记录所在的分组拥有的记录条数只能在 <strong><em>1~8</em></strong> 条之间，</li>
+<li>剩下的分组中记录的条数范围只能在是 <strong><em>4~8</em></strong> 条之间。</li>
+</ul>
+</blockquote>
+<p>如图所示：</p>
+<img src="/keepmoving/2020/04/27/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89-INNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84/16a95c10f2e61ad5.png" class="" title="页目录与记录">
+
+<ul>
+<li>初始情况下一个数据页里只有最小记录和最大记录两条记录，它们分属于两个分组。</li>
+<li>之后每插入一条记录，都会从<code>页目录</code>中找到主键值比本记录的主键值大并且差值最小的槽，然后把该槽对应的记录的<code>n_owned</code>值加1，表示本组内又添加了一条记录，直到该组中的记录数等于8个。</li>
+<li>在一个组中的记录数等于8个后再插入一条记录时，会将组中的记录拆分成两个组，一个组中4条记录，另一个5条记录。这个过程会在<code>页目录</code>中<strong>新增一个<code>槽</code>来记录这个新增分组中最大的那条记录</strong>的偏移量。</li>
+</ul>
+<p>数据页中查找指定主键值的记录的过程分为两步：</p>
+<ul>
+<li>通过二分法确定该记录所在的槽，并找到该槽所在分组中主键值最小的那条记录。</li>
+<li>通过记录的<code>next_record</code>属性遍历该槽所在的组中的各个记录。</li>
+</ul>
+<h3 id="Page-Header（页面头部）"><a href="#Page-Header（页面头部）" class="headerlink" title="Page Header（页面头部）"></a>Page Header（页面头部）</h3><h3 id="File-Header（文件头部）"><a href="#File-Header（文件头部）" class="headerlink" title="File Header（文件头部）"></a>File Header（文件头部）</h3><h3 id="File-Trailer"><a href="#File-Trailer" class="headerlink" title="File Trailer"></a>File Trailer</h3>]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>back to basics</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>重回基础之HTTP协议笔记系列（二）：网络分层模型与域名里的门道</title>
     <url>/keepmoving/2020/04/23/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93/</url>
     <content><![CDATA[<h2 id="序"><a href="#序" class="headerlink" title="序"></a>序</h2><blockquote>
@@ -88,6 +221,7 @@
 </blockquote>
 <h3 id="域名解析过程"><a href="#域名解析过程" class="headerlink" title="域名解析过程"></a>域名解析过程</h3><p>比如你有一个网站要上线，你在域名注册商那里申请了abc.com,那么你的域名A记录就保存在这个域名注册商的DNS服务器上，该DNS服务器称为权威域名服务器。</p>
 <p>当客户端访问abc.com时，先查找浏览器DNS缓存，没有则查找操作系统DNS缓存，在这一阶段是操作系统dnscache clinet 服务进行DNS缓存的（你在任务管理器里面可以看到一个dns客户端进程，就是这玩意实现缓存的），如果还是没有则查找hosts文件中的域名记录。然后依然没有的话则访问电脑上设置的DNS服务器IP，比如三大营运商的dns服务器或者谷歌的8.8.8.8，此时这一层的DNS服务器称为“野生DNS缓存服务器”，也就是非权威域名服务器。如果还是没有则非权威域名服务器会去查找 根域名服务器-顶级域名服务器-二级域名服务器-权威域名服务器 ，这样客户端就在权威域名服务器上找到了abc.com对应的IP了，这个IP可以是多个，每次客户端请求的时候域名服务器会根据负载均衡算法分配一个IP给你。当DNS缓存失效了，则重新开始新一轮的域名请求。<br>总结如下：<br>浏览器缓存-&gt;操作系统dnscache -&gt;hosts文件-&gt;非权威域名服务器-&gt;根域名服务器-&gt;顶级域名服务器-&gt;二级域名服务器-&gt;权威域名服务器。<br>其中非权威域名服务器还包括LDNS（企业内网DNS服务器），三大营运商DNS，谷歌公开的DNS，微软公开的DNS等。</p>
+<h2 id="经典面试题：键入URL会发生什么"><a href="#经典面试题：键入URL会发生什么" class="headerlink" title="经典面试题：键入URL会发生什么"></a>经典面试题：键入URL会发生什么</h2><p><a href="https://mp.weixin.qq.com/s/tZ9-BoP1Oz3K4ZapLlnopQ" target="_blank" rel="noopener">从你输入一个网址，到网页显示，其间发生了什么？</a></p>
 ]]></content>
       <categories>
         <category>http</category>

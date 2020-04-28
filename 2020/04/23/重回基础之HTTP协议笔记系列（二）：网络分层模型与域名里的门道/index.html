@@ -92,7 +92,7 @@
 <meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;23&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93&#x2F;70bc19acacf2245fa841349f15cb7a6f.png">
 <meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;23&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93&#x2F;6b020454987543efdd1cf6ddec784bf2.png">
 <meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;23&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93&#x2F;e51df3245609880641043af65bba94ac.png">
-<meta property="og:updated_time" content="2020-04-26T15:41:23.135Z">
+<meta property="og:updated_time" content="2020-04-27T14:58:20.752Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;23&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93&#x2F;2b8fee82b58cc8da88c74a33f2146703.png">
 
@@ -475,6 +475,7 @@
 </blockquote>
 <h3 id="域名解析过程"><a href="#域名解析过程" class="headerlink" title="域名解析过程"></a>域名解析过程</h3><p>比如你有一个网站要上线，你在域名注册商那里申请了abc.com,那么你的域名A记录就保存在这个域名注册商的DNS服务器上，该DNS服务器称为权威域名服务器。</p>
 <p>当客户端访问abc.com时，先查找浏览器DNS缓存，没有则查找操作系统DNS缓存，在这一阶段是操作系统dnscache clinet 服务进行DNS缓存的（你在任务管理器里面可以看到一个dns客户端进程，就是这玩意实现缓存的），如果还是没有则查找hosts文件中的域名记录。然后依然没有的话则访问电脑上设置的DNS服务器IP，比如三大营运商的dns服务器或者谷歌的8.8.8.8，此时这一层的DNS服务器称为“野生DNS缓存服务器”，也就是非权威域名服务器。如果还是没有则非权威域名服务器会去查找 根域名服务器-顶级域名服务器-二级域名服务器-权威域名服务器 ，这样客户端就在权威域名服务器上找到了abc.com对应的IP了，这个IP可以是多个，每次客户端请求的时候域名服务器会根据负载均衡算法分配一个IP给你。当DNS缓存失效了，则重新开始新一轮的域名请求。<br>总结如下：<br>浏览器缓存-&gt;操作系统dnscache -&gt;hosts文件-&gt;非权威域名服务器-&gt;根域名服务器-&gt;顶级域名服务器-&gt;二级域名服务器-&gt;权威域名服务器。<br>其中非权威域名服务器还包括LDNS（企业内网DNS服务器），三大营运商DNS，谷歌公开的DNS，微软公开的DNS等。</p>
+<h2 id="经典面试题：键入URL会发生什么"><a href="#经典面试题：键入URL会发生什么" class="headerlink" title="经典面试题：键入URL会发生什么"></a>经典面试题：键入URL会发生什么</h2><p><a href="https://mp.weixin.qq.com/s/tZ9-BoP1Oz3K4ZapLlnopQ" target="_blank" rel="noopener">从你输入一个网址，到网页显示，其间发生了什么？</a></p>
 
       
     </div>
@@ -514,6 +515,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/keepmoving/2020/04/27/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89-INNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84/" rel="prev" title="重回基础之MySQL笔记系列（五）:INNODB数据页结构">
+                重回基础之MySQL笔记系列（五）:INNODB数据页结构 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -590,7 +595,7 @@
               
                 <a href="/keepmoving/archives%7C%7C%20archive">
               
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -645,7 +650,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#序"><span class="nav-number">1.</span> <span class="nav-text">序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-IP-网络分层模型"><span class="nav-number">2.</span> <span class="nav-text">TCP/IP 网络分层模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OSI-网络分层模型"><span class="nav-number">3.</span> <span class="nav-text">OSI 网络分层模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-IP-协议栈的工作方式"><span class="nav-number">4.</span> <span class="nav-text">TCP/IP 协议栈的工作方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#域名里的门道"><span class="nav-number">5.</span> <span class="nav-text">域名里的门道</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#域名解析"><span class="nav-number">5.1.</span> <span class="nav-text">域名解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#域名用法"><span class="nav-number">5.2.</span> <span class="nav-text">域名用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#域名解析过程"><span class="nav-number">5.3.</span> <span class="nav-text">域名解析过程</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#序"><span class="nav-number">1.</span> <span class="nav-text">序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-IP-网络分层模型"><span class="nav-number">2.</span> <span class="nav-text">TCP/IP 网络分层模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OSI-网络分层模型"><span class="nav-number">3.</span> <span class="nav-text">OSI 网络分层模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-IP-协议栈的工作方式"><span class="nav-number">4.</span> <span class="nav-text">TCP/IP 协议栈的工作方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#域名里的门道"><span class="nav-number">5.</span> <span class="nav-text">域名里的门道</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#域名解析"><span class="nav-number">5.1.</span> <span class="nav-text">域名解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#域名用法"><span class="nav-number">5.2.</span> <span class="nav-text">域名用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#域名解析过程"><span class="nav-number">5.3.</span> <span class="nav-text">域名解析过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#经典面试题：键入URL会发生什么"><span class="nav-number">6.</span> <span class="nav-text">经典面试题：键入URL会发生什么</span></a></li></ol></div>
             
 
           </div>
