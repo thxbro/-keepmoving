@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/keepmoving/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/keepmoving/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/keepmoving/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/keepmoving/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/keepmoving/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/keepmoving/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/keepmoving/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="back to basics," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="序 重回基础系列之HTTP协议系列主要是基于对 极客时间的《透视HTTP协议》课程的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。">
+<meta name="keywords" content="back to basics">
+<meta property="og:type" content="article">
+<meta property="og:title" content="重回基础之http协议笔记系列（四）：HTTP进阶特性">
+<meta property="og:url" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;05&#x2F;06&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8Bhttp%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9AHTTP%E8%BF%9B%E9%98%B6%E7%89%B9%E6%80%A7&#x2F;index.html">
+<meta property="og:site_name" content="keep moving">
+<meta property="og:description" content="序 重回基础系列之HTTP协议系列主要是基于对 极客时间的《透视HTTP协议》课程的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;05&#x2F;06&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8Bhttp%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9AHTTP%E8%BF%9B%E9%98%B6%E7%89%B9%E6%80%A7&#x2F;5191bce1329efa157a6cc37ab9e789b9.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;05&#x2F;06&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8Bhttp%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9AHTTP%E8%BF%9B%E9%98%B6%E7%89%B9%E6%80%A7&#x2F;0e9bcd6922fa8908bdba79d98ae5fa10.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;05&#x2F;06&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8Bhttp%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9AHTTP%E8%BF%9B%E9%98%B6%E7%89%B9%E6%80%A7&#x2F;fffa3a65e367c496428f3c0c4dac8a37.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;05&#x2F;06&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8Bhttp%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9AHTTP%E8%BF%9B%E9%98%B6%E7%89%B9%E6%80%A7&#x2F;9f6cca61802d65d063e24aa9ca7c38a4.png">
+<meta property="og:updated_time" content="2020-05-06T15:52:09.023Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;05&#x2F;06&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8Bhttp%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9AHTTP%E8%BF%9B%E9%98%B6%E7%89%B9%E6%80%A7&#x2F;5191bce1329efa157a6cc37ab9e789b9.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/keepmoving/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://thxbro.github.io/keepmoving/2020/05/06/重回基础之http协议笔记系列（四）：HTTP进阶特性/"/>
+
+
+
+
+
+  <title>重回基础之http协议笔记系列（四）：HTTP进阶特性 | keep moving</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/keepmoving/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">keep moving</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我们走 我们走</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/keepmoving/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/keepmoving/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/keepmoving/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/keepmoving/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/keepmoving/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://thxbro.github.io/keepmoving/keepmoving/2020/05/06/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8Bhttp%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9AHTTP%E8%BF%9B%E9%98%B6%E7%89%B9%E6%80%A7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Chris">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/keepmoving/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="keep moving">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">重回基础之http协议笔记系列（四）：HTTP进阶特性</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-06T21:55:47+08:00">
+                2020-05-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/keepmoving/categories/http/" itemprop="url" rel="index">
+                    <span itemprop="name">http</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="序"><a href="#序" class="headerlink" title="序"></a>序</h2><blockquote>
+<p>重回基础系列之HTTP协议系列主要是基于对 <strong>极客时间的《透视HTTP协议》课程</strong>的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。</p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="HTTP中的实体数据"><a href="#HTTP中的实体数据" class="headerlink" title="HTTP中的实体数据"></a>HTTP中的实体数据</h2><h3 id="数据类型与压缩"><a href="#数据类型与压缩" class="headerlink" title="数据类型与压缩"></a>数据类型与压缩</h3><p>HTTP中标记实体数据类型使用  <strong>MIME type</strong>，  形式是“<strong>type/subtype</strong>”的字符串 。 这是借鉴了电子邮件系统里的”多用途互联网邮件扩展”（Multipurpose Internet Mail Extensions），简称为 MIME。</p>
+<p> HTTP 里经常遇到的几个类别：</p>
+<ul>
+<li>text ： 即文本格式的可读数据，我们最熟悉的应该就是 text/html 了，表示超文本文档，此外还有纯文本 text/plain、样式表 text/css 等</li>
+<li>image：即图像文件，有 image/gif、image/jpeg、image/png 等 </li>
+<li>audio/video：音频和视频数据，例如 audio/mpeg、video/mp4 等 </li>
+<li>application：数据格式不固定，可能是文本也可能是二进制，必须由上层应用程序来解释。常见的有 application/json，application/javascript、application/pdf 等，另外，如果实在是不知道数据是什么类型，像刚才说的“黑盒”，就会是 application/octet-stream，即不透明的二进制数据 </li>
+</ul>
+<p><strong>MIME type</strong> 只是规定了数据的类型，但在传输过程中为了节省带宽故还会压缩数据，故还有一个 *<em>Encoding type *</em>，表示数据使用什么压缩格式。</p>
+<p>HTTP中常见的压缩格式：</p>
+<ul>
+<li>gzip：GNU zip 压缩格式，也是互联网上最流行的压缩格式； </li>
+<li>deflate：zlib（deflate）压缩格式，流行程度仅次于 gzip； </li>
+<li>br：一种专门为 HTTP 优化的新压缩算法（Brotli）。 </li>
+</ul>
+<blockquote>
+<p><strong>HTTP 协议为此定义了两个 Accept 请求头字段和两个 Content 实体头字段，用于客户端和服务器进行“内容协商”。</strong></p>
+</blockquote>
+<img src="/keepmoving/2020/05/06/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8Bhttp%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9AHTTP%E8%BF%9B%E9%98%B6%E7%89%B9%E6%80%A7/5191bce1329efa157a6cc37ab9e789b9.png" class=""> 
+
+<p> <strong>Accept 字段标记的是客户端可理解的 MIME type</strong>，用“,”做分隔符列出多个类型，让服务器有更多的选择余地； <strong>Accept-Encoding 字段标记的是客户端支持的压缩格式</strong> ,也是用“,”做分隔符列出多个类型.</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="attribute">Accept</span>: text/html,application/xml,image/webp,image/png</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="attribute">Accept-Encoding</span>: gzip, deflate, br</span></pre></td></tr></table></figure>
+
+<p>与客户端相对应的是服务器会在响应报文里使用 <strong>Content-Type 告诉实体数据的真实类型</strong> , 使用<strong>Content-Encoding</strong> 告诉数据实际的压缩格式。</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="attribute">Content-Type</span>: text/html</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="attribute">Content-Encoding</span>: gzip</span></pre></td></tr></table></figure>
+
+<blockquote>
+<p> 不过Accept-Encoding， Content-Encoding这两个字段是可以省略的，如果请求报文里没有 Accept-Encoding 字段，就表示客户端不支持压缩数据；如果响应报文里没有 Content-Encoding 字段，就表示响应数据没有被压缩。 </p>
+</blockquote>
+<h3 id="数据语言与编码"><a href="#数据语言与编码" class="headerlink" title="数据语言与编码"></a>数据语言与编码</h3><p>HTTP中标记实体数据语言 使用<strong>语言类型</strong>，形式为 “<strong>type-subtype</strong> ”的字符串。如下所示：</p>
+<ul>
+<li>en 表示任意的英语 <ul>
+<li>en-US 表示美式英语</li>
+<li>en-GB 表示英式英语</li>
+</ul>
+</li>
+<li>zh-CN 表示汉语</li>
+</ul>
+<p>语言类型固定了实体数据的语言类型，与此同时使用 <strong>字符集</strong> 来处理实体数据的自然语言转换相关内容。常用的有如下所示：</p>
+<ul>
+<li>UTF-8</li>
+<li>ASCII</li>
+<li>Unicode </li>
+</ul>
+<blockquote>
+<p> <strong>HTTP 协议也使用 Accept 请求头字段和 Content 实体头字段，用于客户端和服务器就语言与编码进行“内容协商”。</strong> </p>
+</blockquote>
+ <img src="/keepmoving/2020/05/06/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8Bhttp%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9AHTTP%E8%BF%9B%E9%98%B6%E7%89%B9%E6%80%A7/0e9bcd6922fa8908bdba79d98ae5fa10.png" class=""> 
+
+<p> <strong>Accept-Language</strong> 字段<strong>标记了客户端可理解的自然语言</strong>，也允许用“,”做分隔符列出多个类型；</p>
+<p> 字符集表示<strong>实体数据的编码方式</strong>, HTTP 里使用的请求头字段是 <strong>Accept-Charset</strong> 。 字符集 </p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="attribute">Accept-Language</span>: zh-CN, zh, en</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="attribute">Accept-Charset</span>: gbk, utf-8</span></pre></td></tr></table></figure>
+
+<p>与客户端相对应的服务器会在 响应报文里用头字段 <strong>Content-Language 告诉客户端实体数据使用的实际语言类型</strong> ， 但响应头里却没有对应的 <strong>Content-Charset</strong>，而是在 <strong>Content-Type</strong> 字段的数据类型后面用“charset=xxx”来表示 。</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="attribute">Content-Language</span>: zh-CN</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="attribute">Content-Type</span>: text/html; charset=utf-8</span></pre></td></tr></table></figure>
+
+<blockquote>
+<p> 不过现在的浏览器都支持多种字符集，通常不会发送 Accept-Charset，而服务器也不会发送 Content-Language，因为使用的语言完全可以由字符集推断出来，所以在请求头里一般只会有 Accept-Language 字段，响应头里只会有 Content-Type 字段。 </p>
+</blockquote>
+<h3 id="内容协商的质量值"><a href="#内容协商的质量值" class="headerlink" title="内容协商的质量值"></a>内容协商的质量值</h3><p> 在 HTTP 协议里用  一种特殊的“q”参数表示权重来设定优先级 ，该字段通常使用在 Accept、Accept-Encoding、Accept-Language 等请求头字段进行内容协商的时候 。</p>
+<p> 权重的最大值是 1，最小值是 0.01，默认值是 1，如果值是 0 就表示拒绝。具体的形式是在数据类型或语言代码后面加一个“;”，然后是“q=value”。 </p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="attribute">Accept</span>: text/html,application/xml;q=0.9,*/*;q=0.8</span></pre></td></tr></table></figure>
+
+<p> 内容协商的过程是不透明的，每个 Web 服务器使用的算法都不一样。但有的时候，服务器会在响应头里多加一个 Vary 字段，记录服务器在内容协商时参考的请求头字段，给出一点信息。</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">###这个 Vary 字段表示服务器依据了 Accept-Encoding、User-Agent 和 Accept 这三个头字段，然后决定了发回的响应报文。 </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="attribute">Vary</span>: Accept-Encoding,User-Agent,Accept</span></pre></td></tr></table></figure>
+
+<h2 id="HTTP传输大文件"><a href="#HTTP传输大文件" class="headerlink" title="HTTP传输大文件"></a>HTTP传输大文件</h2><h3 id="数据压缩"><a href="#数据压缩" class="headerlink" title="数据压缩"></a>数据压缩</h3><p> 浏览器在发送请求时都会带着“<strong>Accept-Encoding</strong>”头字段，里面是浏览器支持的压缩格式列表，例如 gzip、deflate、br 等，这样服务器就可以从中选择一种压缩算法，放进“<strong>Content-Encoding</strong>”响应头里，再把原数据压缩后发给浏览器。</p>
+<p><strong>但这种方式仅对文本文件有较好的压缩率，而图片、音频视频等多媒体数据本身就已经是高度压缩的，再用 gzip 处理也不会变小</strong>。</p>
+<blockquote>
+<p> Nginx 里就会使用“gzip on”指令，启用对“text/html”的压缩。 </p>
+</blockquote>
+<h3 id="分块传输"><a href="#分块传输" class="headerlink" title="分块传输"></a>分块传输</h3><p><strong>含义</strong>：大文件（图片，音频等）分解成多个小块， 把这些小块分批发给浏览器，浏览器收到后再组装复原。</p>
+<p> 这种“<strong>化整为零</strong>”的思路在 HTTP 协议里就是“chunked”分块传输编码，在响应报文里用头字段“<strong>Transfer-Encoding: chunked</strong>”来表示，意思是报文里的 body 部分不是一次性发过来的，而是分成了许多的块（chunk）逐个发送。 </p>
+<p>分块传输同样 用于“<strong>流式数据</strong>”，例如由数据库动态生成的表单页面，这种情况下 body 数据的长度是未知的，无法在头字段“<strong>Content-Length</strong>”里给出确切的长度，所以也只能用 chunked 方式分块发送。 </p>
+<blockquote>
+<p> “Transfer-Encoding: chunked”和“Content-Length”这两个字段是互斥的 ，响应报文长度要么是已知的，要么是未知的。</p>
+</blockquote>
+<p> 分块传输的编码规则 ：</p>
+<ol>
+<li>每个分块包含两个部分，长度头和数据块；</li>
+<li>长度头是以 CRLF（回车换行，即\r\n）结尾的一行明文，用 16 进制数字表示长度；</li>
+<li>数据块紧跟在长度头后，最后也用 CRLF 结尾，但数据不包含 CRLF；</li>
+<li>最后用一个长度为 0 的块表示结束，即“0\r\n\r\n”。 </li>
+</ol>
+
+
+<h3 id="范围请求"><a href="#范围请求" class="headerlink" title="范围请求"></a>范围请求</h3><p>分块传输可以轻松的收发大文件，但针对某些情况仍然无法解决，比如你在看视频的时候拖动滚动条，这实际上获取一个大文件其中的片段数据，而分块传输是将整个数据传输，并不能满足这个需求。</p>
+<p>HTTP协议为了满足该需求，提出了 <strong>范围请求</strong>的概念，允许客户端在请求头里使用专用字段来表示获取文件的一部分，相当于是客户端的 <strong>化整为零</strong>。</p>
+<p>范围请求不是Web服务器必备的，所以Web服务器必须明确使用字段“<strong>Accept-Ranges: bytes</strong>”明确告知客户端 。</p>
+<p> 请求头 <strong>Range</strong> 是 HTTP 范围请求的专用字段，格式是“bytes=x-y”，其中的 x 和 y 是以字节为单位的数据范围。 格式比较灵活，如下所示。</p>
+<ul>
+<li>0-”表示从文档起点到文档终点，相当于“0-99”，即整个文件；</li>
+<li>“10-”是从第 10 个字节开始到文档末尾，相当于“10-99”；</li>
+<li>“-1”是文档的最后一个字节，相当于“99-99”；</li>
+<li>“-10”是从文档末尾倒数 10 个字节，相当于“90-99”。 </li>
+</ul>
+<p>服务器收到 <strong>Range</strong> 字段请求后，会进行以下几个步骤。</p>
+<ol>
+<li>检查范围是否合法，若否则返回 416（ 范围请求有误 ）。</li>
+<li>若正确，则读取文件片段，返回 206 （原数据的一部分）。</li>
+<li>添加一个响应头： <strong>Content-Range</strong> , 诉片段的实际偏移量和资源的总大小，格式是“bytes x-y/length“ .</li>
+<li>发送数据了，直接把片段用 TCP 发给客户端 </li>
+</ol>
+<h3 id="多段数据"><a href="#多段数据" class="headerlink" title="多段数据"></a>多段数据</h3><p>范围请求一次只获取一个片段，其实它还支持在 Range 头里使用多个“x-y”，一次性获取多个片段数据。</p>
+<p><strong>这种情况需要使用一种特殊的 MIME 类型：“multipart/byteranges”，表示报文的 body 是由多段字节序列组成的，并且还要用一个参数“boundary=xxx”给出段之间的分隔标记。</strong></p>
+<img src="/keepmoving/2020/05/06/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8Bhttp%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9AHTTP%E8%BF%9B%E9%98%B6%E7%89%B9%E6%80%A7/fffa3a65e367c496428f3c0c4dac8a37.png" class="" title="多段数据">
+
+<p>每一个分段必须以“- -boundary”开始（前面加两个“-”），之后要用“Content-Type”和“Content-Range”标记这段数据的类型和所在范围，然后就像普通的响应头一样以回车换行结束，再加上分段数据，最后用一个“- -boundary- -”（前后各有两个“-”）表示所有的分段结束。</p>
+<h2 id="HTTP的连接管理"><a href="#HTTP的连接管理" class="headerlink" title="HTTP的连接管理"></a>HTTP的连接管理</h2><h2 id="HTTP的重定向和跳转"><a href="#HTTP的重定向和跳转" class="headerlink" title="HTTP的重定向和跳转"></a>HTTP的重定向和跳转</h2><p>在某一个页面中发起一个新的 HTTP 请求，获取响应报文后就会切换显示内容，渲染出新 URI 指向的页面这样的动作称之为<strong>主动跳转</strong>，还有一类跳转是由服务器来发起的，浏览器使用者无法控制，相对地就可以称为“被动跳转”，这在 HTTP 协议里有个专门的名词，叫做<strong>重定向</strong>。</p>
+<h3 id="重定向的过程"><a href="#重定向的过程" class="headerlink" title="重定向的过程"></a>重定向的过程</h3><p>301称之为永久重定向，302称之为临时重定向。</p>
+<p>这两个状态码都会搭配“<strong>Location</strong>”响应头字段，<strong>它标记了服务器要求重定向的 URI</strong>，当浏览器接收到301或302的状态码时，会检查响应头里有没有“Location”。如果有，就从字段值里提取出 URI，发出新的 HTTP 请求。</p>
+<p>重定向报文中还可以使用 *<em>Refresh *</em>字段实现延时重定向，（refresh：5；url=xxx）。</p>
+<p>与跳转相关的还有一个<strong>Referer</strong>和<strong>Referrer-Policy</strong>（前者是一个拼写错误），表示浏览器跳转的来源，可用于统计分析额防盗链。</p>
+<blockquote>
+<p>Location可以使用使用绝对 URI，也可以使用相对 URI。在重定向时如果只是在站内跳转，你可以放心地使用相对 URI。但如果要跳转到站外，就必须用绝对 URI。</p>
+</blockquote>
+<h3 id="重定向状态码"><a href="#重定向状态码" class="headerlink" title="重定向状态码"></a>重定向状态码</h3><ul>
+<li>301： 俗称“永久重定向”（Moved Permanently），意思是原 URI 已经“永久”性地不存在了，今后的所有请求都必须改用新的 URI。<ul>
+<li>域名、服务器、网站架构发生了大幅度的改变</li>
+</ul>
+</li>
+<li>302 ：俗称“临时重定向”（“Moved Temporarily”），意思是原 URI 处于“临时维护”状态，新的 URI 是起“顶包”作用的“临时工”。<ul>
+<li>系统维护</li>
+<li>服务降级：双11，把不重要的功能入口暂时关闭，保证核心服务能够正常运行</li>
+</ul>
+</li>
+<li>303 See Other：类似 302，但要求重定向后的请求改为 GET 方法，访问一个结果页面，避免 POST/PUT 重复操作；</li>
+<li>307 Temporary Redirect：类似 302，但重定向后请求里的方法和实体不允许变动，含义比 302 更明确；</li>
+<li>308 Permanent Redirect：类似 307，不允许重定向后的请求变动，但它是 301“永久重定向”的含义。</li>
+</ul>
+<blockquote>
+<p>后3个状态码浏览器的接受程度较低，有的浏览器可能不支持，开发需谨慎。</p>
+</blockquote>
+<h3 id="重定向到应用场景"><a href="#重定向到应用场景" class="headerlink" title="重定向到应用场景"></a>重定向到应用场景</h3><ul>
+<li>资源不可用（域名变更，服务器变更，网站改版等）</li>
+<li>避免重复（多个网址都跳转到一个 URI，增加访问入口的同时还不会增加额外的工作量）</li>
+</ul>
+<h3 id="重定向的相关问题"><a href="#重定向的相关问题" class="headerlink" title="重定向的相关问题"></a>重定向的相关问题</h3><ul>
+<li>性能损耗：重定向的机制决定了一个跳转会有两次请求 - 应答，比正常的访问多了一次，站内重定向还好说，可以长连接复用，站外重定向就要开两个连接</li>
+<li>循环跳转：如果重定向的策略设置欠考虑，可能会出现“A=&gt;B=&gt;C=&gt;A”的无限循环，故HTTP协议规定浏览器必须有检测循环跳转到能力。</li>
+</ul>
+<h2 id="HTTP的Cookie机制"><a href="#HTTP的Cookie机制" class="headerlink" title="HTTP的Cookie机制"></a>HTTP的Cookie机制</h2><p>由于HTTP协议是无状态的，所以服务器不会记住每次请求过来的客户端。所以服务器给每个客户端都贴上一张小纸条，上面写了一些只有服务器才能理解的数据，需要的时候客户端把这些信息发给服务器，服务器看到 Cookie，就能够认出是哪个客户端。</p>
+<h3 id="Cookie-的工作过程"><a href="#Cookie-的工作过程" class="headerlink" title="Cookie 的工作过程"></a>Cookie 的工作过程</h3><p>使用set-cookie来给客户端小纸条，客户端每次使用cookie字段来携带小纸条告诉服务器。</p>
+<img src="/keepmoving/2020/05/06/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8Bhttp%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9AHTTP%E8%BF%9B%E9%98%B6%E7%89%B9%E6%80%A7/9f6cca61802d65d063e24aa9ca7c38a4.png" class="" title="cookie的工作机制">
+
+<blockquote>
+<p>Cookie 是由浏览器负责存储的，而不是操作系统。所以，它是“浏览器绑定”的，只能在本浏览器内生效。</p>
+</blockquote>
+<h3 id="Cookie的属性"><a href="#Cookie的属性" class="headerlink" title="Cookie的属性"></a>Cookie的属性</h3><blockquote>
+<p>Cookie 就是服务器委托浏览器存储在客户端里的一些数据，而这些数据通常都会记录用户的关键识别信息。所以，就需要在“key=value”外再用一些手段来保护，防止外泄或窃取，这些手段就是 Cookie 的属性。</p>
+</blockquote>
+<ul>
+<li><p>Cookie 的生存周期</p>
+<ul>
+<li><strong>Expires</strong>：过期时间，用的是绝对时间点，可以理解为“截止日期”（deadline）</li>
+<li><strong>Max-Age</strong>：相对时间，单位是秒，览器用收到报文的时间点再加上 Max-Age，就可以得到失效的绝对时间。</li>
+</ul>
+<blockquote>
+<p>两者可同时出现，数据可以不一致，浏览器优先采用max-age；</p>
+<p>若不指定，则为会话Cookie，一旦浏览器关闭就失效。</p>
+</blockquote>
+</li>
+<li><p>Cookie 的作用域</p>
+<ul>
+<li><code>Domain</code>和<code>Path</code>指定了Cookie所属的<strong>域名</strong>和<strong>路径</strong>，浏览器在发送Cookie前会从URI中提取host和path部分，对比Cookie的属性。如果不满足条件，就不会在请求头里发送Cookie。</li>
+<li>通常<code>Path</code>就用一个 <code>/</code> 来直接省略，表示该域名下的所有路径都允许使用Cookie，让服务器自己去挑选。</li>
+</ul>
+</li>
+<li><p>Cookie的安全性</p>
+<ul>
+<li><strong>HttpOnly</strong>：此 Cookie 只能通过浏览器 HTTP 协议传输，禁止其他方式访问，浏览器的 JS 引擎就会禁用 document.cookie 等一切相关的 API，脚本攻击也就无从谈起了。</li>
+<li><strong>SameSite</strong>：可以防范”跨站请求伪造”（XSRF）攻击，设置成 <code>SameSite = Strict</code>可以严格限定Cookie不能随着跳转链接跨站发送，而<code>SameSite = Lax</code>则略宽松一点，允许GET/HEAD请求，但禁止POST请求。 </li>
+<li><strong>Secure</strong>：表示这个Cookie仅能用HTTPS协议进行传输，明文的HTTP协议会禁止发送。但Cookie本身是不加密的，浏览器还是以明文显示。</li>
+</ul>
+</li>
+</ul>
+<h3 id="Cookie的应用"><a href="#Cookie的应用" class="headerlink" title="Cookie的应用"></a>Cookie的应用</h3><ul>
+<li>身份识别 ：保存用户的登录信息，实现会话事务。</li>
+<li>广告跟踪：这种Cookie不是由访问的主站存储的，所以又叫”第三方存储”。</li>
+</ul>
+<h2 id="HTTP的缓存控制"><a href="#HTTP的缓存控制" class="headerlink" title="HTTP的缓存控制"></a>HTTP的缓存控制</h2><h3 id="服务器的缓存控制"><a href="#服务器的缓存控制" class="headerlink" title="服务器的缓存控制"></a>服务器的缓存控制</h3><h3 id="客户端的缓存控制"><a href="#客户端的缓存控制" class="headerlink" title="客户端的缓存控制"></a>客户端的缓存控制</h3><h3 id="条件请求"><a href="#条件请求" class="headerlink" title="条件请求"></a>条件请求</h3>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/keepmoving/tags/back-to-basics/" rel="tag"># back to basics</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/keepmoving/2020/05/04/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AHTTP%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84%E4%B8%8E%E7%89%B9%E7%82%B9/" rel="next" title="重回基础之HTTP协议笔记系列（三）：HTTP基本结构与特点">
+                <i class="fa fa-chevron-left"></i> 重回基础之HTTP协议笔记系列（三）：HTTP基本结构与特点
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Chris</p>
+              <p class="site-description motion-element" itemprop="description">夜越黑 星星就越明亮</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/keepmoving/archives%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/keepmoving/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/keepmoving/tags/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#序"><span class="nav-number">1.</span> <span class="nav-text">序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP中的实体数据"><span class="nav-number">2.</span> <span class="nav-text">HTTP中的实体数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据类型与压缩"><span class="nav-number">2.1.</span> <span class="nav-text">数据类型与压缩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据语言与编码"><span class="nav-number">2.2.</span> <span class="nav-text">数据语言与编码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内容协商的质量值"><span class="nav-number">2.3.</span> <span class="nav-text">内容协商的质量值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP传输大文件"><span class="nav-number">3.</span> <span class="nav-text">HTTP传输大文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据压缩"><span class="nav-number">3.1.</span> <span class="nav-text">数据压缩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分块传输"><span class="nav-number">3.2.</span> <span class="nav-text">分块传输</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#范围请求"><span class="nav-number">3.3.</span> <span class="nav-text">范围请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多段数据"><span class="nav-number">3.4.</span> <span class="nav-text">多段数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP的连接管理"><span class="nav-number">4.</span> <span class="nav-text">HTTP的连接管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP的重定向和跳转"><span class="nav-number">5.</span> <span class="nav-text">HTTP的重定向和跳转</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#重定向的过程"><span class="nav-number">5.1.</span> <span class="nav-text">重定向的过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重定向状态码"><span class="nav-number">5.2.</span> <span class="nav-text">重定向状态码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重定向到应用场景"><span class="nav-number">5.3.</span> <span class="nav-text">重定向到应用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重定向的相关问题"><span class="nav-number">5.4.</span> <span class="nav-text">重定向的相关问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP的Cookie机制"><span class="nav-number">6.</span> <span class="nav-text">HTTP的Cookie机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Cookie-的工作过程"><span class="nav-number">6.1.</span> <span class="nav-text">Cookie 的工作过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cookie的属性"><span class="nav-number">6.2.</span> <span class="nav-text">Cookie的属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cookie的应用"><span class="nav-number">6.3.</span> <span class="nav-text">Cookie的应用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP的缓存控制"><span class="nav-number">7.</span> <span class="nav-text">HTTP的缓存控制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#服务器的缓存控制"><span class="nav-number">7.1.</span> <span class="nav-text">服务器的缓存控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#客户端的缓存控制"><span class="nav-number">7.2.</span> <span class="nav-text">客户端的缓存控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#条件请求"><span class="nav-number">7.3.</span> <span class="nav-text">条件请求</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chris</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/keepmoving/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/keepmoving/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/keepmoving/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/keepmoving/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/keepmoving/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/keepmoving/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/keepmoving/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/keepmoving/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/keepmoving/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/keepmoving/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/keepmoving/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "./public/search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/keepmoving/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
