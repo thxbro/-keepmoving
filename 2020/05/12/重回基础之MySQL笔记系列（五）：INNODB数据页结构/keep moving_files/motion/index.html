@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/keepmoving/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/keepmoving/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/keepmoving/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/keepmoving/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/keepmoving/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/keepmoving/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/keepmoving/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="&#x2F;* global NexT: true *&#x2F;  $(document).ready(function () {   NexT.motion &#x3D; {};    var sidebarToggleLines &#x3D; {     lines: [],     push: function (line) {       this.lines.push(line);     },     init: func">
+<meta property="og:type" content="article">
+<meta property="og:title" content="重回基础之MySQL笔记系列（五）：INNODB数据页结构&#x2F;keep moving_files&#x2F;motion">
+<meta property="og:url" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;05&#x2F;12&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AINNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84&#x2F;keep%20moving_files&#x2F;motion&#x2F;index.html">
+<meta property="og:site_name" content="keep moving">
+<meta property="og:description" content="&#x2F;* global NexT: true *&#x2F;  $(document).ready(function () {   NexT.motion &#x3D; {};    var sidebarToggleLines &#x3D; {     lines: [],     push: function (line) {       this.lines.push(line);     },     init: func">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-05-11T16:00:19.636Z">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/keepmoving/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://thxbro.github.io/keepmoving/2020/05/12/重回基础之MySQL笔记系列（五）：INNODB数据页结构/keep moving_files/motion/"/>
+
+
+
+
+
+  <title>重回基础之MySQL笔记系列（五）：INNODB数据页结构/keep moving_files/motion | keep moving</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/keepmoving/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">keep moving</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">先观其大意 后化整为零</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/keepmoving/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/keepmoving/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/keepmoving/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/keepmoving/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/keepmoving/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://thxbro.github.io/keepmoving/keepmoving/2020/05/12/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AINNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84/keep%20moving_files/motion/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Chris">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/keepmoving/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="keep moving">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">重回基础之MySQL笔记系列（五）：INNODB数据页结构/keep moving_files/motion</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-12T00:00:19+08:00">
+                2020-05-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        /* global NexT: true */
+
+$(document).ready(function () {
+  NexT.motion = {};
+
+  var sidebarToggleLines = {
+    lines: [],
+    push: function (line) {
+      this.lines.push(line);
+    },
+    init: function () {
+      this.lines.forEach(function (line) {
+        line.init();
+      });
+    },
+    arrow: function () {
+      this.lines.forEach(function (line) {
+        line.arrow();
+      });
+    },
+    close: function () {
+      this.lines.forEach(function (line) {
+        line.close();
+      });
+    }
+  };
+
+  function SidebarToggleLine(settings) {
+    this.el = $(settings.el);
+    this.status = $.extend({}, {
+      init: {
+        width: '100%',
+        opacity: 1,
+        left: 0,
+        rotateZ: 0,
+        top: 0
+      }
+    }, settings.status);
+  }
+
+  SidebarToggleLine.prototype.init = function () {
+    this.transform('init');
+  };
+  SidebarToggleLine.prototype.arrow = function () {
+    this.transform('arrow');
+  };
+  SidebarToggleLine.prototype.close = function () {
+    this.transform('close');
+  };
+  SidebarToggleLine.prototype.transform = function (status) {
+    this.el.velocity('stop').velocity(this.status[status]);
+  };
+
+  var sidebarToggleLine1st = new SidebarToggleLine({
+    el: '.sidebar-toggle-line-first',
+    status: {
+      arrow: {width: '50%', rotateZ: '-45deg', top: '2px'},
+      close: {width: '100%', rotateZ: '-45deg', top: '5px'}
+    }
+  });
+  var sidebarToggleLine2nd = new SidebarToggleLine({
+    el: '.sidebar-toggle-line-middle',
+    status: {
+      arrow: {width: '90%'},
+      close: {opacity: 0}
+    }
+  });
+  var sidebarToggleLine3rd = new SidebarToggleLine({
+    el: '.sidebar-toggle-line-last',
+    status: {
+      arrow: {width: '50%', rotateZ: '45deg', top: '-2px'},
+      close: {width: '100%', rotateZ: '45deg', top: '-5px'}
+    }
+  });
+
+  sidebarToggleLines.push(sidebarToggleLine1st);
+  sidebarToggleLines.push(sidebarToggleLine2nd);
+  sidebarToggleLines.push(sidebarToggleLine3rd);
+
+  var SIDEBAR_WIDTH = '320px';
+  var SIDEBAR_DISPLAY_DURATION = 200;
+  var xPos, yPos;
+
+  var sidebarToggleMotion = {
+    toggleEl: $('.sidebar-toggle'),
+    dimmerEl: $('#sidebar-dimmer'),
+    sidebarEl: $('.sidebar'),
+    isSidebarVisible: false,
+    init: function () {
+      this.toggleEl.on('click', this.clickHandler.bind(this));
+      this.dimmerEl.on('click', this.clickHandler.bind(this));
+      this.toggleEl.on('mouseenter', this.mouseEnterHandler.bind(this));
+      this.toggleEl.on('mouseleave', this.mouseLeaveHandler.bind(this));
+      this.sidebarEl.on('touchstart', this.touchstartHandler.bind(this));
+      this.sidebarEl.on('touchend', this.touchendHandler.bind(this));
+      this.sidebarEl.on('touchmove', function(e){e.preventDefault();});
+
+      $(document)
+        .on('sidebar.isShowing', function () {
+          NexT.utils.isDesktop() && $('body').velocity('stop').velocity(
+            {paddingRight: SIDEBAR_WIDTH},
+            SIDEBAR_DISPLAY_DURATION
+          );
+        })
+        .on('sidebar.isHiding', function () {
+        });
+    },
+    clickHandler: function () {
+      this.isSidebarVisible ? this.hideSidebar() : this.showSidebar();
+      this.isSidebarVisible = !this.isSidebarVisible;
+    },
+    mouseEnterHandler: function () {
+      if (this.isSidebarVisible) {
+        return;
+      }
+      sidebarToggleLines.arrow();
+    },
+    mouseLeaveHandler: function () {
+      if (this.isSidebarVisible) {
+        return;
+      }
+      sidebarToggleLines.init();
+    },
+    touchstartHandler: function(e) {
+      xPos = e.originalEvent.touches[0].clientX;
+      yPos = e.originalEvent.touches[0].clientY;
+    },
+    touchendHandler: function(e) {
+      var _xPos = e.originalEvent.changedTouches[0].clientX;
+      var _yPos = e.originalEvent.changedTouches[0].clientY;
+      if (_xPos-xPos > 30 && Math.abs(_yPos-yPos) < 20) {
+          this.clickHandler();
+      }
+    },
+    showSidebar: function () {
+      var self = this;
+
+      sidebarToggleLines.close();
+
+      this.sidebarEl.velocity('stop').velocity({
+          width: SIDEBAR_WIDTH
+        }, {
+          display: 'block',
+          duration: SIDEBAR_DISPLAY_DURATION,
+          begin: function () {
+            $('.sidebar .motion-element').velocity(
+              'transition.slideRightIn',
+              {
+                stagger: 50,
+                drag: true,
+                complete: function () {
+                  self.sidebarEl.trigger('sidebar.motion.complete');
+                }
+              }
+            );
+          },
+          complete: function () {
+            self.sidebarEl.addClass('sidebar-active');
+            self.sidebarEl.trigger('sidebar.didShow');
+          }
+        }
+      );
+
+      this.sidebarEl.trigger('sidebar.isShowing');
+    },
+    hideSidebar: function () {
+      NexT.utils.isDesktop() && $('body').velocity('stop').velocity({paddingRight: 0});
+      this.sidebarEl.find('.motion-element').velocity('stop').css('display', 'none');
+      this.sidebarEl.velocity('stop').velocity({width: 0}, {display: 'none'});
+
+      sidebarToggleLines.init();
+
+      this.sidebarEl.removeClass('sidebar-active');
+      this.sidebarEl.trigger('sidebar.isHiding');
+
+      // Prevent adding TOC to Overview if Overview was selected when close & open sidebar.
+      if (!!$('.post-toc-wrap')) {
+        if ($('.site-overview-wrap').css('display') === 'block') {
+          $('.post-toc-wrap').removeClass('motion-element');
+        } else {
+          $('.post-toc-wrap').addClass('motion-element');
+        }
+      }
+    }
+  };
+  sidebarToggleMotion.init();
+
+  NexT.motion.integrator = {
+    queue: [],
+    cursor: -1,
+    add: function (fn) {
+      this.queue.push(fn);
+      return this;
+    },
+    next: function () {
+      this.cursor++;
+      var fn = this.queue[this.cursor];
+      $.isFunction(fn) && fn(NexT.motion.integrator);
+    },
+    bootstrap: function () {
+      this.next();
+    }
+  };
+
+  NexT.motion.middleWares =  {
+    logo: function (integrator) {
+      var sequence = [];
+      var $brand = $('.brand');
+      var $title = $('.site-title');
+      var $subtitle = $('.site-subtitle');
+      var $logoLineTop = $('.logo-line-before i');
+      var $logoLineBottom = $('.logo-line-after i');
+
+      $brand.size() > 0 && sequence.push({
+        e: $brand,
+        p: {opacity: 1},
+        o: {duration: 200}
+      });
+
+      NexT.utils.isMist() && hasElement([$logoLineTop, $logoLineBottom]) &&
+      sequence.push(
+        getMistLineSettings($logoLineTop, '100%'),
+        getMistLineSettings($logoLineBottom, '-100%')
+      );
+
+      hasElement($title) && sequence.push({
+        e: $title,
+        p: {opacity: 1, top: 0},
+        o: { duration: 200 }
+      });
+
+      hasElement($subtitle) && sequence.push({
+        e: $subtitle,
+        p: {opacity: 1, top: 0},
+        o: {duration: 200}
+      });
+
+      if (CONFIG.motion.async) {
+        integrator.next();
+      }
+
+      if (sequence.length > 0) {
+        sequence[sequence.length - 1].o.complete = function () {
+          integrator.next();
+        };
+        $.Velocity.RunSequence(sequence);
+      } else {
+        integrator.next();
+      }
+
+
+      function getMistLineSettings (element, translateX) {
+        return {
+          e: $(element),
+          p: {translateX: translateX},
+          o: {
+            duration: 500,
+            sequenceQueue: false
+          }
+        };
+      }
+
+      /**
+       * Check if $elements exist.
+       * @param {jQuery|Array} $elements
+       * @returns {boolean}
+       */
+      function hasElement ($elements) {
+        $elements = Array.isArray($elements) ? $elements : [$elements];
+        return $elements.every(function ($element) {
+          return $.isFunction($element.size) && $element.size() > 0;
+        });
+      }
+    },
+
+    menu: function (integrator) {
+
+      if (CONFIG.motion.async) {
+        integrator.next();
+      }
+
+      $('.menu-item').velocity('transition.slideDownIn', {
+        display: null,
+        duration: 200,
+        complete: function () {
+          integrator.next();
+        }
+      });
+    },
+
+    postList: function (integrator) {
+      //var $post = $('.post');
+      var $postBlock = $('.post-block, .pagination, .comments');
+      var $postBlockTransition = CONFIG.motion.transition.post_block;
+      var $postHeader = $('.post-header');
+      var $postHeaderTransition = CONFIG.motion.transition.post_header;
+      var $postBody = $('.post-body');
+      var $postBodyTransition = CONFIG.motion.transition.post_body;
+      var $collHeader = $('.collection-title, .archive-year');
+      var $collHeaderTransition = CONFIG.motion.transition.coll_header;
+      var $sidebarAffix = $('.sidebar-inner');
+      var $sidebarAffixTransition = CONFIG.motion.transition.sidebar;
+      var hasPost = $postBlock.size() > 0;
+
+      hasPost ? postMotion() : integrator.next();
+
+      if (CONFIG.motion.async) {
+        integrator.next();
+      }
+
+      function postMotion () {
+        var postMotionOptions = window.postMotionOptions || {
+            stagger: 100,
+            drag: true
+          };
+        postMotionOptions.complete = function () {
+          // After motion complete need to remove transform from sidebar to let affix work on Pisces | Gemini.
+          if (CONFIG.motion.transition.sidebar && (NexT.utils.isPisces() || NexT.utils.isGemini())) {
+            $sidebarAffix.css({ 'transform': 'initial' });
+          }
+          integrator.next();
+        };
+
+        //$post.velocity('transition.slideDownIn', postMotionOptions);
+        if (CONFIG.motion.transition.post_block) {
+          $postBlock.velocity('transition.' + $postBlockTransition, postMotionOptions);
+        }
+        if (CONFIG.motion.transition.post_header) {
+          $postHeader.velocity('transition.' + $postHeaderTransition, postMotionOptions);
+        }
+        if (CONFIG.motion.transition.post_body) {
+          $postBody.velocity('transition.' + $postBodyTransition, postMotionOptions);
+        }
+        if (CONFIG.motion.transition.coll_header) {
+          $collHeader.velocity('transition.' + $collHeaderTransition, postMotionOptions);
+        }
+        // Only for Pisces | Gemini.
+        if (CONFIG.motion.transition.sidebar && (NexT.utils.isPisces() || NexT.utils.isGemini())) {
+          $sidebarAffix.velocity('transition.' + $sidebarAffixTransition, postMotionOptions);
+        }
+      }
+    },
+
+    sidebar: function (integrator) {
+      if (CONFIG.sidebar.display === 'always') {
+        NexT.utils.displaySidebar();
+      }
+      integrator.next();
+    }
+  };
+
+});
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/keepmoving/2020/05/12/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AINNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84/keep%20moving_files/utils/" rel="next" title="重回基础之MySQL笔记系列（五）：INNODB数据页结构/keep moving_files/utils">
+                <i class="fa fa-chevron-left"></i> 重回基础之MySQL笔记系列（五）：INNODB数据页结构/keep moving_files/utils
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/keepmoving/2020/05/12/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AINNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84/keep%20moving_files/bootstrap/" rel="prev" title="重回基础之MySQL笔记系列（五）：INNODB数据页结构/keep moving_files/bootstrap">
+                重回基础之MySQL笔记系列（五）：INNODB数据页结构/keep moving_files/bootstrap <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Chris</p>
+              <p class="site-description motion-element" itemprop="description">夜越黑 星星就越明亮</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/keepmoving/archives%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/keepmoving/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/keepmoving/tags/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chris</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/keepmoving/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/keepmoving/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/keepmoving/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/keepmoving/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/keepmoving/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/keepmoving/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/keepmoving/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/keepmoving/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/keepmoving/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/keepmoving/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/keepmoving/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "./public/search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/keepmoving/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

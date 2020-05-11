@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/keepmoving/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/keepmoving/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/keepmoving/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/keepmoving/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/keepmoving/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/keepmoving/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/keepmoving/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="back to basics," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="序 重回基础系列之MySQL系列主要是基于对 极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。">
+<meta name="keywords" content="back to basics">
+<meta property="og:type" content="article">
+<meta property="og:title" content="重回基础之MySQL笔记系列（五）:INNODB数据页结构">
+<meta property="og:url" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;27&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AINNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84&#x2F;index.html">
+<meta property="og:site_name" content="keep moving">
+<meta property="og:description" content="序 重回基础系列之MySQL系列主要是基于对 极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;27&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AINNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84&#x2F;16f13ee1e2dfac7c.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;27&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AINNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84&#x2F;16a95c0fe86555ed.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;27&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AINNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84&#x2F;16a95c10773d8cee.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;27&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AINNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84&#x2F;16a95c1084c440b4.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;27&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AINNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84&#x2F;16a95c10f2e61ad5.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;27&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AINNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84&#x2F;16a95c10eb9d61ce.png">
+<meta property="og:updated_time" content="2020-05-11T15:58:28.869Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;thxbro.github.io&#x2F;keepmoving&#x2F;2020&#x2F;04&#x2F;27&#x2F;%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AINNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84&#x2F;16f13ee1e2dfac7c.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/keepmoving/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://thxbro.github.io/keepmoving/2020/04/27/重回基础之MySQL笔记系列（五）：INNODB数据页结构/"/>
+
+
+
+
+
+  <title>重回基础之MySQL笔记系列（五）:INNODB数据页结构 | keep moving</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/keepmoving/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">keep moving</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">先观其大意 后化整为零</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/keepmoving/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/keepmoving/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/keepmoving/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/keepmoving/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/keepmoving/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://thxbro.github.io/keepmoving/keepmoving/2020/04/27/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AINNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Chris">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/keepmoving/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="keep moving">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">重回基础之MySQL笔记系列（五）:INNODB数据页结构</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-27T23:03:21+08:00">
+                2020-04-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/keepmoving/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="序"><a href="#序" class="headerlink" title="序"></a>序</h2><blockquote>
+<p>重回基础系列之MySQL系列主要是基于对 <strong>极客时间的《mysql实战45讲》课程和掘金的《从根上理解mysql》小册子</strong>的笔记整理，文章内容中或多或少会添加自己的理解，仅仅是对自己知识体系的重新认识与巩固，为避免遗忘，故记之。</p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="数据页结构"><a href="#数据页结构" class="headerlink" title="数据页结构"></a>数据页结构</h2><img src="/keepmoving/2020/04/27/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AINNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84/16f13ee1e2dfac7c.png" class="" title="数据页结构">
+
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>中文字</th>
+<th>占用空间大小</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>File Header</td>
+<td>文件头部</td>
+<td><code>38</code>字节</td>
+<td>页的一些通用信息</td>
+</tr>
+<tr>
+<td>Page Header</td>
+<td>页面头部</td>
+<td><code>56</code>字节</td>
+<td>数据页专有的一些信息</td>
+</tr>
+<tr>
+<td>Infimum + Supremum</td>
+<td>最小记录和最大记录</td>
+<td><code>26</code>字节</td>
+<td>两个虚拟的行记录</td>
+</tr>
+<tr>
+<td>User Records</td>
+<td>用户记录</td>
+<td>不确定</td>
+<td>实际存储的行记录内容</td>
+</tr>
+<tr>
+<td>Free Space</td>
+<td>空闲空间</td>
+<td>不确定</td>
+<td>页中尚未使用的空间</td>
+</tr>
+<tr>
+<td>Page Directory</td>
+<td>页面目录</td>
+<td>不确定</td>
+<td>页中的某些记录的相对位置</td>
+</tr>
+<tr>
+<td>File Trailer</td>
+<td>文件尾部</td>
+<td><code>8</code>字节</td>
+<td>校验页是否完整</td>
+</tr>
+</tbody></table>
+<h2 id="数据页如何存储记录"><a href="#数据页如何存储记录" class="headerlink" title="数据页如何存储记录"></a>数据页如何存储记录</h2><p>记录进入数据页时从 <code>free space</code>中申请一个记录的存储空间划分到 <code>user records</code>，直至用完，若仍要插入则申请新的数据页，过程如图：</p>
+<img src="/keepmoving/2020/04/27/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AINNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84/16a95c0fe86555ed.png" class="" title="记录进入数据页过程">
+
+<h3 id="记录头信息的相关内容解释"><a href="#记录头信息的相关内容解释" class="headerlink" title="记录头信息的相关内容解释"></a>记录头信息的相关内容解释</h3><p>现在将记录插入表中如图所示：（图中所显示的都是10进制）</p>
+<img src="/keepmoving/2020/04/27/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AINNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84/16a95c10773d8cee.png" class="" title="记录再表中的表示">
+
+<ul>
+<li>delete_mask</li>
+</ul>
+<p>属性标记着当前记录是否被删除，占用1个二进制位，0表示没删除，1表示已删除。</p>
+<blockquote>
+<p>被删除的记录还在页中，是因为移除它们之后把其他的记录在磁盘上重新排列需要性能消耗，故所有被删除掉的记录都会组成一个所谓的<code>垃圾链表</code>，在这个链表中的记录占用的空间称之为所谓的<code>可重用空间</code>，之后若有新纪录插入到表中，则会覆盖这些空间。</p>
+</blockquote>
+<ul>
+<li>heap_no</li>
+</ul>
+<p>表示当前记录在页中的位置。</p>
+<blockquote>
+<p>每个页中都innodb都会自动插入两条虚拟记录，分别是<strong>最小记录</strong>和<strong>最大记录</strong>。他们的heap_no分别为0和1。这两条记录都是由5字节大小的<code>记录头信息</code>和8字节大小的一个固定的部分组成的（最小记录【Infimum】和最大记录【Supremum】）。他们都单独存放在 <strong>Infimum + Supremum</strong>的部分中，而不存在 <strong>User Records</strong>。</p>
+</blockquote>
+<ul>
+<li>next_record</li>
+</ul>
+<p>表示从当前记录的真实数据到下一条记录的真实数据的地址偏移量。</p>
+<blockquote>
+<p>比方说第一条记录的<code>next_record</code>值为<code>32</code>，意味着从第一条记录的真实数据的地址处向后找<code>32</code>个字节便是下一条记录的真实数据。</p>
+<p><strong><em>Infimum记录（也就是最小记录）</em></strong> 的下一条记录就是本页中主键值最小的用户记录，而本页中主键值最大的用户记录的下一条记录就是 <strong>*Supremum记录（也就是最大记录）</strong>。</p>
+</blockquote>
+<img src="/keepmoving/2020/04/27/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AINNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84/16a95c1084c440b4.png" class="" title="next_record示意图">
+
+
+
+<p><strong>所以，不论我们怎么对页中的记录做增删改操作，InnoDB始终会维护一条记录的单链表，链表中的各个节点是按照主键值由小到大的顺序连接起来的。</strong></p>
+<h3 id="Page-Directory（页目录）"><a href="#Page-Directory（页目录）" class="headerlink" title="Page Directory（页目录）"></a>Page Directory（页目录）</h3><p>innodb是按照如下步骤存放页目录数据，页目录的单位是 slot。</p>
+<ol>
+<li><p>innodb将所有正常的记录（包括最大和最小记录，不包括标记为已删除的记录）划分为几个组。</p>
+</li>
+<li><p>每个组的最后一条记录（也就是组内最大的那条记录）的头信息中的<code>n_owned</code>属性表示该记录拥有多少条记录，也就是该组内共有几条记录。</p>
+</li>
+<li><p>将每个组的最后一条记录的地址偏移量单独提取出来按顺序存储到靠近<code>页</code>的尾部的地方，这个地方就是所谓的<code>Page Directory</code>，也就是<code>页目录</code>（此时应该返回头看看页面各个部分的图）。页面目录中的这些地址偏移量被称为<code>槽</code>（英文名：<code>Slot</code>），所以这个页面目录就是由<code>槽</code>组成的。</p>
+</li>
+</ol>
+<blockquote>
+<p>注意：每个分组中的记录条数是有规定的：</p>
+<ul>
+<li>对于最小记录所在的分组只能有 <strong><em>1</em></strong> 条记录，</li>
+<li>最大记录所在的分组拥有的记录条数只能在 <strong><em>1~8</em></strong> 条之间，</li>
+<li>剩下的分组中记录的条数范围只能在是 <strong><em>4~8</em></strong> 条之间。</li>
+</ul>
+</blockquote>
+<p>如图所示：</p>
+<img src="/keepmoving/2020/04/27/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AINNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84/16a95c10f2e61ad5.png" class="" title="页目录与记录">
+
+<ul>
+<li>初始情况下一个数据页里只有最小记录和最大记录两条记录，它们分属于两个分组。</li>
+<li>之后每插入一条记录，都会从<code>页目录</code>中找到主键值比本记录的主键值大并且差值最小的槽，然后把该槽对应的记录的<code>n_owned</code>值加1，表示本组内又添加了一条记录，直到该组中的记录数等于8个。</li>
+<li>在一个组中的记录数等于8个后再插入一条记录时，会将组中的记录拆分成两个组，一个组中4条记录，另一个5条记录。这个过程会在<code>页目录</code>中<strong>新增一个<code>槽</code>来记录这个新增分组中最大的那条记录</strong>的偏移量。</li>
+</ul>
+<p>数据页中查找指定主键值的记录的过程分为两步：</p>
+<ul>
+<li>通过二分法确定该记录所在的槽，并找到该槽所在分组中主键值最小的那条记录。</li>
+<li>通过记录的<code>next_record</code>属性遍历该槽所在的组中的各个记录。</li>
+</ul>
+<h3 id="Page-Header（页面头部）"><a href="#Page-Header（页面头部）" class="headerlink" title="Page Header（页面头部）"></a>Page Header（页面头部）</h3><p>记录一个<strong>数据页</strong>中存储的记录的状态信息：本页中已经存储了多少条记录，第一条记录的地址是什么，页目录中存储了多少个槽等等。它是<code>页</code>结构的第二部分，这个部分占用固定的<code>56</code>个字节。</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>占用空间大小</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>PAGE_N_DIR_SLOTS</code></td>
+<td><code>2</code>字节</td>
+<td align="left">在页目录中的槽数量</td>
+</tr>
+<tr>
+<td><code>PAGE_HEAP_TOP</code></td>
+<td><code>2</code>字节</td>
+<td align="left">还未使用的空间最小地址，也就是说从该地址之后就是<code>Free Space</code></td>
+</tr>
+<tr>
+<td><code>PAGE_N_HEAP</code></td>
+<td><code>2</code>字节</td>
+<td align="left">本页中的记录的数量（包括最小和最大记录以及标记为删除的记录）</td>
+</tr>
+<tr>
+<td><code>PAGE_FREE</code></td>
+<td><code>2</code>字节</td>
+<td align="left">第一个已经标记为删除的记录地址（各个已删除的记录通过<code>next_record</code>也会组成一个单链表，这个单链表中的记录可以被重新利用）</td>
+</tr>
+<tr>
+<td><code>PAGE_GARBAGE</code></td>
+<td><code>2</code>字节</td>
+<td align="left">已删除记录占用的字节数</td>
+</tr>
+<tr>
+<td><code>PAGE_LAST_INSERT</code></td>
+<td><code>2</code>字节</td>
+<td align="left">最后插入记录的位置</td>
+</tr>
+<tr>
+<td><code>PAGE_DIRECTION</code></td>
+<td><code>2</code>字节</td>
+<td align="left">记录插入的方向</td>
+</tr>
+<tr>
+<td><code>PAGE_N_DIRECTION</code></td>
+<td><code>2</code>字节</td>
+<td align="left">一个方向连续插入的记录数量</td>
+</tr>
+<tr>
+<td><code>PAGE_N_RECS</code></td>
+<td><code>2</code>字节</td>
+<td align="left">该页中记录的数量（不包括最小和最大记录以及被标记为删除的记录）</td>
+</tr>
+<tr>
+<td><code>AGE_MAX_TRX_ID</code></td>
+<td><code>8</code>字节</td>
+<td align="left">修改当前页的最大事务ID，该值仅在二级索引中定义</td>
+</tr>
+<tr>
+<td><code>PAGE_LEVEL</code></td>
+<td><code>2</code>字节</td>
+<td align="left">当前页在B+树中所处的层级</td>
+</tr>
+<tr>
+<td><code>PAGE_INDEX_ID</code></td>
+<td><code>8</code>字节</td>
+<td align="left">索引ID，表示当前页属于哪个索引</td>
+</tr>
+<tr>
+<td><code>PAGE_BTR_SEG_LEAF</code></td>
+<td><code>10</code>字节</td>
+<td align="left">B+树叶子段的头部信息，仅在B+树的Root页定义</td>
+</tr>
+<tr>
+<td><code>PAGE_BTR_SEG_TOP</code></td>
+<td><code>10</code>字节</td>
+<td align="left">B+树非叶子段的头部信息，仅在B+树的Root页定义</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p>PAGE_DIRECTION</p>
+<p>假如新插入的一条记录的主键值比上一条记录的主键值大，我们说这条记录的插入方向是右边，反之则是左边。</p>
+</li>
+<li><p>PAGE_N_DIRECTION</p>
+<p>假设连续几次插入新记录的方向都是一致的，<code>InnoDB</code>会把沿着同一个方向插入记录的条数记下来。</p>
+</li>
+</ul>
+<h3 id="File-Header（文件头部）"><a href="#File-Header（文件头部）" class="headerlink" title="File Header（文件头部）"></a>File Header（文件头部）</h3><p>Page Header是针对数据页的，记录数据页的相关信息。但<code>File Header</code>针对<strong>各种类型的页</strong>都通用，也就是说不同类型的页都会以<code>File Header</code>作为第一个组成部分，它描述了一些针对各种页都通用的一些信息，比方说这个页的编号是多少，它的上一个页、下一个页等。</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>占用空间大小</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>FIL_PAGE_SPACE_OR_CHKSUM</code></td>
+<td><code>4</code>字节</td>
+<td>页的校验和（checksum值）</td>
+</tr>
+<tr>
+<td><code>FIL_PAGE_OFFSET</code></td>
+<td><code>4</code>字节</td>
+<td>页号</td>
+</tr>
+<tr>
+<td><code>FIL_PAGE_PREV</code></td>
+<td><code>4</code>字节</td>
+<td>上一个页的页号</td>
+</tr>
+<tr>
+<td><code>FIL_PAGE_NEXT</code></td>
+<td><code>4</code>字节</td>
+<td>下一个页的页号</td>
+</tr>
+<tr>
+<td><code>FIL_PAGE_LSN</code></td>
+<td><code>8</code>字节</td>
+<td>页面被最后修改时对应的日志序列位置（英文名是：Log Sequence Number）</td>
+</tr>
+<tr>
+<td><code>FIL_PAGE_TYPE</code></td>
+<td><code>2</code>字节</td>
+<td>该页的类型</td>
+</tr>
+<tr>
+<td><code>FIL_PAGE_FILE_FLUSH_LSN</code></td>
+<td><code>8</code>字节</td>
+<td>仅在系统表空间的一个页中定义，代表文件至少被刷新到了对应的LSN值</td>
+</tr>
+<tr>
+<td><code>FIL_PAGE_ARCH_LOG_NO_OR_SPACE_ID</code></td>
+<td><code>4</code>字节</td>
+<td>页属于哪个表空间</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p>FIL_PAGE_OFFSET</p>
+<p>每一个<code>页</code>都有一个单独的页号，就跟你的身份证号码一样，<code>InnoDB</code>通过页号来可以唯一定位一个<code>页</code>。</p>
+</li>
+<li><p>FIL_PAGE_TYPE</p>
+<table>
+<thead>
+<tr>
+<th>类型名称</th>
+<th>十六进制</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>FIL_PAGE_TYPE_ALLOCATED</code></td>
+<td>0x0000</td>
+<td>最新分配，还没使用</td>
+</tr>
+<tr>
+<td><code>FIL_PAGE_UNDO_LOG</code></td>
+<td>0x0002</td>
+<td>Undo日志页</td>
+</tr>
+<tr>
+<td><code>FIL_PAGE_INODE</code></td>
+<td>0x0003</td>
+<td>段信息节点</td>
+</tr>
+<tr>
+<td><code>FIL_PAGE_IBUF_FREE_LIST</code></td>
+<td>0x0004</td>
+<td>Insert Buffer空闲列表</td>
+</tr>
+<tr>
+<td><code>FIL_PAGE_IBUF_BITMAP</code></td>
+<td>0x0005</td>
+<td>Insert Buffer位图</td>
+</tr>
+<tr>
+<td><code>FIL_PAGE_TYPE_SYS</code></td>
+<td>0x0006</td>
+<td>系统页</td>
+</tr>
+<tr>
+<td><code>FIL_PAGE_TYPE_TRX_SYS</code></td>
+<td>0x0007</td>
+<td>事务系统数据</td>
+</tr>
+<tr>
+<td><code>FIL_PAGE_TYPE_FSP_HDR</code></td>
+<td>0x0008</td>
+<td>表空间头部信息</td>
+</tr>
+<tr>
+<td><code>FIL_PAGE_TYPE_XDES</code></td>
+<td>0x0009</td>
+<td>扩展描述页</td>
+</tr>
+<tr>
+<td><code>FIL_PAGE_TYPE_BLOB</code></td>
+<td>0x000A</td>
+<td>溢出页</td>
+</tr>
+<tr>
+<td><code>FIL_PAGE_INDEX</code></td>
+<td>0x45BF</td>
+<td>索引页，也就是我们所说的<code>数据页</code></td>
+</tr>
+</tbody></table>
+</li>
+<li><p>FIL_PAGE_PREV<code>和</code>FIL_PAGE_NEXT</p>
+<p>并不是所有类型的页都有上一个和下一个页的属性，数据页是有这两个属性的，所以所有的数据页其实是一个双链表。</p>
+<img src="/keepmoving/2020/04/27/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BMySQL%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AINNODB%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84/16a95c10eb9d61ce.png" class="" title="数据页结构">
+
+</li>
+</ul>
+<h3 id="File-Trailer"><a href="#File-Trailer" class="headerlink" title="File Trailer"></a>File Trailer</h3><p><code>InnoDB</code>存储引擎会把数据存储到磁盘上，需要以<code>页</code>为单位把数据加载到内存中处理，如果该页中的数据在内存中被修改了，那么在修改后的某个时间需要把数据同步到磁盘中。若在此过程中出现任何问题，为了检测一个页是否完整（也就是在同步的时候有没有发生只同步一半的尴尬情况），故每个数据页尾部都加了一个<code>File Trailer</code>部分，这个部分由<code>8</code>个字节组成。</p>
+<ul>
+<li><p><strong>页的校验和</strong>（前4个字节）</p>
+<p>这个部分是和<code>File Header</code>中的校验和相对应的。每当一个页面在内存中修改了，在同步之前就要把它的校验和算出来，因为<code>File Header</code>在页面的前边，所以校验和会被首先同步到磁盘，当完全写完时，校验和也会被写到页的尾部，如果完全同步成功，则页的首部和尾部的校验和应该是一致的。</p>
+</li>
+<li><p><strong>页面被最后修改时对应的日志序列位置（LSN）</strong>（后4个字节）</p>
+<p>这个部分也是为了校验页的完整性的</p>
+</li>
+</ul>
+<blockquote>
+<p>为保证同步到磁盘页的完整性，对比页的首部和尾部都会存储页中数据的<strong>校验和</strong>和<strong>页面最后修改时对应的<code>LSN</code>值</strong>。</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/keepmoving/tags/back-to-basics/" rel="tag"># back to basics</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/keepmoving/2020/04/23/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%9F%9F%E5%90%8D%E9%87%8C%E7%9A%84%E9%97%A8%E9%81%93/" rel="next" title="重回基础之HTTP协议笔记系列（二）：网络分层模型与域名里的门道">
+                <i class="fa fa-chevron-left"></i> 重回基础之HTTP协议笔记系列（二）：网络分层模型与域名里的门道
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/keepmoving/2020/05/04/%E9%87%8D%E5%9B%9E%E5%9F%BA%E7%A1%80%E4%B9%8BHTTP%E5%8D%8F%E8%AE%AE%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AHTTP%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84%E4%B8%8E%E7%89%B9%E7%82%B9/" rel="prev" title="重回基础之HTTP协议笔记系列（三）：HTTP基本结构与特点">
+                重回基础之HTTP协议笔记系列（三）：HTTP基本结构与特点 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Chris</p>
+              <p class="site-description motion-element" itemprop="description">夜越黑 星星就越明亮</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/keepmoving/archives%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/keepmoving/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/keepmoving/tags/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#序"><span class="nav-number">1.</span> <span class="nav-text">序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据页结构"><span class="nav-number">2.</span> <span class="nav-text">数据页结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据页如何存储记录"><span class="nav-number">3.</span> <span class="nav-text">数据页如何存储记录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#记录头信息的相关内容解释"><span class="nav-number">3.1.</span> <span class="nav-text">记录头信息的相关内容解释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Page-Directory（页目录）"><span class="nav-number">3.2.</span> <span class="nav-text">Page Directory（页目录）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Page-Header（页面头部）"><span class="nav-number">3.3.</span> <span class="nav-text">Page Header（页面头部）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#File-Header（文件头部）"><span class="nav-number">3.4.</span> <span class="nav-text">File Header（文件头部）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#File-Trailer"><span class="nav-number">3.5.</span> <span class="nav-text">File Trailer</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chris</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/keepmoving/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/keepmoving/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/keepmoving/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/keepmoving/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/keepmoving/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/keepmoving/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/keepmoving/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/keepmoving/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/keepmoving/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/keepmoving/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/keepmoving/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "./public/search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/keepmoving/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
